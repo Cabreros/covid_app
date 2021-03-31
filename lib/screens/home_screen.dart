@@ -1,3 +1,4 @@
+import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -6,6 +7,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _province = 'ON';
+  List<String> _provinces = ['ON', 'YK', 'AB', 'QC'];
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -34,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   SliverToBoxAdapter _header() {
     return SliverToBoxAdapter(
       child: Container(
-        padding: EdgeInsets.all(15.0),
+        padding: EdgeInsets.symmetric(horizontal: 15.0),
         height: 100.0,
         decoration: BoxDecoration(
           color: Color(0xffe27d60),
@@ -44,19 +48,73 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(
-                  'COVID-19',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 50.0,
-                    fontFamily: 'Futura',
+                Expanded(
+                  child: Text(
+                    'COVID-19',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 27.0,
+                      fontFamily: 'Futura',
+                    ),
                   ),
-                )
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _province,
+                      items: _provinces
+                          .map(
+                            (e) => DropdownMenuItem(
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10.0),
+                                    height: 40.0,
+                                    width: 40.0,
+                                    child: Image.asset(
+                                      'assets/images/$e.jpg',
+                                    ),
+                                  ),
+                                  Text(
+                                    e,
+                                    style: TextStyle(
+                                        fontFamily: 'Futura', fontSize: 15),
+                                  ),
+                                ],
+                              ),
+                              value: e,
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (String value) {
+                        setState(() => _province = value);
+                      },
+                    ),
+                  ),
+                ),
               ],
-            )
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            Text(
+              'Current Case Statistics',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 23.0,
+                fontFamily: 'Futura',
+              ),
+            ),
           ],
         ),
       ),
@@ -66,26 +124,17 @@ class _HomeScreenState extends State<HomeScreen> {
   SliverToBoxAdapter _body() {
     return SliverToBoxAdapter(
       child: Container(
-        height: 1000.0,
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: Colors.white,
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(25.0),
             bottomRight: Radius.circular(25.0),
           ),
         ),
+        child: Center(
+          child: StatsCard(),
+        ),
       ),
     );
   }
 }
-
-// appBar: AppBar(
-//   backgroundColor: Color(0xff85dcba),
-//   actions: [
-//     IconButton(
-//         icon: Icon(
-//           Icons.notifications,
-//         ),
-//         onPressed: null)
-//   ],
-// ),
