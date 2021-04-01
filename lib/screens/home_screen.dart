@@ -131,8 +131,40 @@ class _HomeScreenState extends State<HomeScreen> {
             bottomRight: Radius.circular(25.0),
           ),
         ),
-        child: Center(
-          child: StatsCard(),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                StatsCard(
+                  label: 'Active Cases',
+                  stat: 25744,
+                ),
+                StatsCard(
+                  label: 'Active Cases',
+                  stat: 25744,
+                  color: Color(0xffc38d9e),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                StatsCard(
+                  label: 'Active Cases',
+                  stat: 25744,
+                ),
+                StatsCard(
+                  label: 'Active Cases',
+                  stat: 25744,
+                  color: Color(0xffc38d9e),
+                ),
+                StatsCard(
+                  label: 'Active Cases',
+                  stat: 25744,
+                  color: Color(0xffc38d9e),
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );
