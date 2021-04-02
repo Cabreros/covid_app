@@ -1,3 +1,5 @@
+import 'package:current_cases_app/services/data_service.dart';
+import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +9,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _dataService = DataService();
+  List<Summary> _response;
   String _province = 'ON';
   List<String> _provinces = ['ON', 'YK', 'AB', 'QC'];
 
@@ -163,10 +167,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Color(0xffc38d9e),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
     );
+  }
+
+  void _makeRequest() async {
+    final response = await _dataService.getSummary();
+    setState(() {
+      _response = response;
+    });
   }
 }
