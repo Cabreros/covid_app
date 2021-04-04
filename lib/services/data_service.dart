@@ -22,4 +22,29 @@ class DataService {
       throw "unable to retrieve posts.";
     }
   }
+
+  Future<List<Summary>> getProvinceSummary(String province) async {
+    Map<String, String> requestHeaders = {
+      'loc': province,
+    };
+
+    final uri = Uri.https('api.opencovid.ca', '/summary');
+    final response = await http.get(
+      uri,
+      headers: requestHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> body = jsonDecode(response.body)['summary'];
+
+      List<Summary> allSummary = body
+          .map(
+            (dynamic item) => Summary.fromJson(item),
+          )
+          .toList();
+      return allSummary;
+    } else {
+      throw "unable to retrieve posts.";
+    }
+  }
 }

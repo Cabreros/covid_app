@@ -12,8 +12,22 @@ class _StatsScreenState extends State<StatsScreen> {
   Widget build(BuildContext context) {
     return Container(
       child: Center(
+        // child: FutureBuilder(
+        //   future: DataService().getProvinceSummary('ON'), // async work
+        //   builder: (context, snapshot) {
+        //     switch (snapshot.connectionState) {
+        //       case ConnectionState.waiting:
+        //         return Text('Loading....');
+        //       default:
+        //         if (snapshot.hasError)
+        //           return Text('Error: ${snapshot.error}');
+        //         else
+        //           return Text('Result: ${snapshot.data[1].to}');
+        //     }
+        //   },
+        // ),
         child: FutureBuilder(
-          future: DataService().getSummary(),
+          future: DataService().getProvinceSummary('ON'),
           builder: (
             BuildContext context,
             AsyncSnapshot<List<Summary>> snapshot,
@@ -24,7 +38,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 children: posts
                     .map(
                       (Summary post) => Text(
-                        post.toString(),
+                        post.province,
                       ),
                     )
                     .toList(),

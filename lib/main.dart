@@ -1,5 +1,4 @@
 import 'package:current_cases_app/screens/bottom_nav_screen.dart';
-import 'package:current_cases_app/services/data_service.dart';
 import 'package:flutter/material.dart';
 
 void main() {
