@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:http/http.dart' as http;

@@ -1,24 +1,22 @@
-import 'dart:convert';
-
 class Summary {
-  final int activeCases;
-  final int activeCasesChanges;
-  final double activeVaccine;
-  final int cases;
-  final double culActiveVaccine;
-  final int culCases;
-  final double culVaccine;
-  final double culDeaths;
-  final double culDVaccine;
-  final double culRecovered;
-  final double culTesting;
-  final double cVaccine;
-  final String date;
-  final double deaths;
-  final double dVaccine;
-  final String province;
-  final double recovered;
-  final double testing;
+  var activeCases;
+  var activeCasesChanges;
+  var activeVaccine;
+  var cases;
+  var culActiveVaccine;
+  var culCases;
+  var culVaccine;
+  var culDeaths;
+  var culDVaccine;
+  var culRecovered;
+  var culTesting;
+  var cVaccine;
+  var date;
+  var deaths;
+  var dVaccine;
+  var province;
+  var recovered;
+  var testing;
   Summary({
     this.activeCases,
     this.activeCasesChanges,
@@ -40,46 +38,23 @@ class Summary {
     this.testing,
   });
 
-  // Map<String, dynamic> toMap() {
-  //   return {
-  //     'activeCases': activeCases,
-  //     'activeCasesChanges': activeCasesChanges,
-  //     'activeVaccine': activeVaccine,
-  //     'cases': cases,
-  //     // 'culActiveVaccine': culActiveVaccine,
-  //     // 'culCases': culCases,
-  //     // 'culVaccinel': culVaccinel,
-  //     // 'culDeaths': culDeaths,
-  //     // 'culDVaccine': culDVaccine,
-  //     // 'culRecovered': culRecovered,
-  //     // 'culTesting': culTesting,
-  //     // 'cVaccine': cVaccine,
-  //     // 'date': date,
-  //     // 'deaths': deaths,
-  //     // 'dVaccine': dVaccine,
-  //     // 'province': province,
-  //     // 'recovered': recovered,
-  //     // 'testing': testing,
-  //   };
-  // }
-
   factory Summary.fromJson(Map<String, dynamic> json) {
     return Summary(
-      activeCases: json['activeCases'],
-      activeCasesChanges: json['activeCasesChanges'],
-      activeVaccine: json['activeVaccine'],
+      activeCases: json['active_cases'],
+      activeCasesChanges: json['active_cases_change'],
+      activeVaccine: json['avaccine'],
       cases: json['cases'],
-      culActiveVaccine: json['culActiveVaccine'],
-      culCases: json['culCases'],
-      culVaccine: json['culVaccinel'],
-      culDeaths: json['culDeaths'],
-      culDVaccine: json['culDVaccine'],
-      culRecovered: json['culRecovered'],
-      culTesting: json['culTesting'],
-      cVaccine: json['cVaccine'],
+      culActiveVaccine: json['cumulative_avaccine'],
+      culCases: json['cumulative_cases'],
+      culVaccine: json['cumulative_cvaccine'],
+      culDeaths: json['cumulative_deaths'],
+      culDVaccine: json['cumulative_dvaccine'],
+      culRecovered: json['cumulative_recovered'],
+      culTesting: json['cumulative_testing'],
+      cVaccine: json['cvaccine'],
       date: json['date'],
       deaths: json['deaths'],
-      dVaccine: json['dVaccine'],
+      dVaccine: json['dvaccine'],
       province: json['province'],
       recovered: json['recovered'],
       testing: json['testing'],

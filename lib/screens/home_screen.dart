@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _dataService = DataService();
-  List<Summary> _response;
+  Summary _response;
   String _province = 'ON';
   List<String> _provinces = ['ON', 'YK', 'AB', 'QC'];
 
@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       body: CustomScrollView(
-        slivers: [_appBar(), _header(), _body()],
+        slivers: [_appBar(), _header(), _body(_province)],
       ),
     );
   }
@@ -101,7 +101,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                           .toList(),
                       onChanged: (String value) {
-                        setState(() => _province = value);
+                        setState(() {
+                          _province = value;
+                          _makeRequest();
+                        });
                       },
                     ),
                   ),
@@ -125,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SliverToBoxAdapter _body() {
+  SliverToBoxAdapter _body(province) {
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -135,47 +138,62 @@ class _HomeScreenState extends State<HomeScreen> {
             bottomRight: Radius.circular(25.0),
           ),
         ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                StatsCard(
-                  label: 'Active Cases',
-                  stat: 25744,
-                ),
-                StatsCard(
-                  label: 'Active Cases',
-                  stat: 25744,
-                  color: Color(0xffc38d9e),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                StatsCard(
-                  label: 'Active Cases',
-                  stat: 25744,
-                ),
-                StatsCard(
-                  label: 'Active Cases',
-                  stat: 25744,
-                  color: Color(0xffc38d9e),
-                ),
-                StatsCard(
-                  label: 'Active Cases',
-                  stat: 25744,
-                  color: Color(0xffc38d9e),
-                ),
-              ],
-            ),
-          ],
+        child: FutureBuilder(
+          future: DataService().getProvinceSummary(province), // async work
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return Text('Loading....');
+              default:
+                if (snapshot.hasError)
+                  return Text('Error: ${snapshot.error}');
+                else {
+                  var summary = snapshot.data;
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          StatsCard(
+                            label: 'Total Cases',
+                            stat: summary.culCases.toInt().toString(),
+                          ),
+                          StatsCard(
+                            label: 'Total Deaths',
+                            stat: summary.culDeaths.toInt().toString(),
+                            color: Color(0xffc38d9e),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          StatsCard(
+                            label: 'Active',
+                            stat: summary.activeCases.toInt().toString(),
+                          ),
+                          StatsCard(
+                            label: 'Recovered',
+                            stat: summary.culRecovered.toInt().toString(),
+                            color: Color(0xffc38d9e),
+                          ),
+                          StatsCard(
+                            label: 'Deaths',
+                            stat: summary.deaths.toInt().toString(),
+                            color: Color(0xffc38d9e),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+            }
+          },
         ),
       ),
     );
   }
 
   void _makeRequest() async {
-    final response = await _dataService.getSummary();
+    final response = await _dataService.getProvinceSummary(_province);
     setState(() {
       _response = response;
     });

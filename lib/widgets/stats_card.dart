@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class StatsCard extends StatelessWidget {
   final String label;
-  final int stat;
+  final String stat;
   final Color color;
   const StatsCard({
     @required this.label,
@@ -32,6 +32,9 @@ class StatsCard extends StatelessWidget {
                 fontFamily: 'Futura',
               ),
             ),
+            SizedBox(
+              height: 10.0,
+            ),
             Text(
               '$stat',
               style: TextStyle(
@@ -39,7 +42,7 @@ class StatsCard extends StatelessWidget {
                 fontSize: 20.0,
                 fontFamily: 'Futura',
               ),
-            )
+            ),
           ],
         ),
       ),
