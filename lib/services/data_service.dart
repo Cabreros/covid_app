@@ -23,15 +23,42 @@ class DataService {
     }
   }
 
+  Future<Summary> getHealthCodeSummary(int num) async {
+    Map<String, String> requestHeaders;
+    requestHeaders = {
+      'loc': num.toString(),
+    };
+
+    final uri = Uri.https('api.opencovid.ca', '/summary', requestHeaders);
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      var body = jsonDecode(response.body)['summary'];
+
+      if (body.length < 1) {
+        return null;
+      } else {
+        return Summary.fromJson(body[0]);
+      }
+    } else {
+      throw "unable to retrieve posts.";
+    }
+  }
+
   Future<Summary> getProvinceSummary(String province, [DateTime date]) async {
     Map<String, String> requestHeaders;
 
     if (date != null) {
-      date = date.subtract(
-        Duration(
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final aDate = DateTime(date.year, date.month, date.day);
+
+      if (aDate == today) {
+        date = date.subtract(Duration(
           days: 1,
-        ),
-      );
+        ));
+      }
+
       String day = date.day.toString();
       String month = date.month.toString();
       String year = date.year.toString();
