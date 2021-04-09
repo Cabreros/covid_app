@@ -23,10 +23,35 @@ class DataService {
     }
   }
 
-  Future<Summary> getProvinceSummary(String province) async {
-    Map<String, String> requestHeaders = {
-      'loc': province,
-    };
+  Future<Summary> getProvinceSummary(String province, [DateTime date]) async {
+    Map<String, String> requestHeaders;
+
+    if (date != null) {
+      date = date.subtract(
+        Duration(
+          days: 1,
+        ),
+      );
+      String day = date.day.toString();
+      String month = date.month.toString();
+      String year = date.year.toString();
+
+      if (day.length == 1) {
+        day = '0' + day;
+      }
+      if (month.length == 1) {
+        month = '0' + month;
+      }
+
+      requestHeaders = {
+        'loc': province,
+        'date': day + '-' + month + '-' + year,
+      };
+    } else {
+      requestHeaders = {
+        'loc': province,
+      };
+    }
 
     final uri = Uri.https('api.opencovid.ca', '/summary', requestHeaders);
     final response = await http.get(uri);
@@ -34,7 +59,11 @@ class DataService {
     if (response.statusCode == 200) {
       var body = jsonDecode(response.body)['summary'];
 
-      return Summary.fromJson(body[0]);
+      if (body.length < 1) {
+        return null;
+      } else {
+        return Summary.fromJson(body[0]);
+      }
     } else {
       throw "unable to retrieve posts.";
     }
