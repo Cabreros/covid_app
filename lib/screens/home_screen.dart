@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SliverAppBar(
       backgroundColor: Color(0xffe27d60),
       title: Text(
-        'Current Statistics',
+        'Current Case Statistics',
         style: TextStyle(
           color: Colors.white,
           fontSize: 23.0,
@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    'Provincial Summary',
+                    'Daily Summary',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24.0,
@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SliverToBoxAdapter _bodyStats(_province) {
+  SliverToBoxAdapter _bodyStats(province) {
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -147,7 +147,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: FutureBuilder(
-          future: futSummary,
+          future: DataService()
+              .getProvinceSummary(province, DateTime.now()), // async work
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -314,17 +315,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  SliverToBoxAdapter _datePicker() {
+    return SliverToBoxAdapter(
+      child: Container(
+        height: 25.0,
+        child: ElevatedButton(
+          onPressed: () => _selectDate(context),
+          child: Text('Select date'),
+        ),
+      ),
+    );
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate.subtract(Duration(days: 1)),
-      firstDate: DateTime(2020, 3),
-      lastDate: selectedDate,
-    );
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2020, 3),
+        lastDate: DateTime.now());
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        futSummary = DataService().getProvinceSummary(_province, picked);
       });
   }
 }
