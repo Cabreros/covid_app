@@ -1,4 +1,5 @@
 import 'package:current_cases_app/services/data_service.dart';
+import 'package:current_cases_app/services/health_region_model.dart';
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,8 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime selectedDate = DateTime.now();
   Future<Summary> futSummary =
       DataService().getProvinceSummary('MB', DateTime.now());
+  Future<HealthRegion> healthRegionSummary =
+      DataService().getHealthCodeSummary(3595);
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: FutureBuilder(
-          future: futSummary,
+          future: healthRegionSummary,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -242,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.hasError)
                   return Text('Error: ${snapshot.error}');
                 else {
-                  var summary = snapshot.data;
+                  var regionSummary = snapshot.data;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -258,53 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 5.0),
-                        child: Text(
-                          'Updated as of: ' +
-                              summary.date.toString() +
-                              'selected date ' +
-                              selectedDate.toString(),
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 10.0,
-                            fontFamily: 'Futura',
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          StatsCard(
-                            label: 'Active',
-                            stat: summary.activeCases.toInt().toString(),
-                            color: Color(0xffc38d9e),
-                          ),
-                          StatsCard(
-                            label: 'Recovered',
-                            stat: summary.culRecovered.toInt().toString(),
-                            color: Color(0xff85dcba),
-                          ),
-                          StatsCard(
-                            label: 'Deaths',
-                            stat: summary.deaths.toInt().toString(),
-                            color: Color(0xffe27d60),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          StatsCard(
-                            label: 'Total Cases',
-                            stat: summary.culCases.toInt().toString(),
-                          ),
-                          StatsCard(
-                            label: 'Total Deaths',
-                            stat: summary.culDeaths.toInt().toString(),
-                            color: Color(0xffe8a87c),
-                          ),
-                        ],
-                      ),
+                      Text(regionSummary.date)
                     ],
                   );
                 }

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:http/http.dart' as http;
 
+import 'health_region_model.dart';
+
 class DataService {
   Future<List<Summary>> getSummary() async {
     final uri = Uri.https('api.opencovid.ca', '/summary');
@@ -23,7 +25,7 @@ class DataService {
     }
   }
 
-  Future<Summary> getHealthCodeSummary(int num) async {
+  Future<HealthRegion> getHealthCodeSummary(int num) async {
     Map<String, String> requestHeaders;
     requestHeaders = {
       'loc': num.toString(),
@@ -38,7 +40,7 @@ class DataService {
       if (body.length < 1) {
         return null;
       } else {
-        return Summary.fromJson(body[0]);
+        return HealthRegion.fromJson(body[0]);
       }
     } else {
       throw "unable to retrieve posts.";
