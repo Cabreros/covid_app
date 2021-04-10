@@ -315,18 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SliverToBoxAdapter _datePicker() {
-    return SliverToBoxAdapter(
-      child: Container(
-        height: 25.0,
-        child: ElevatedButton(
-          onPressed: () => _selectDate(context),
-          child: Text('Select date'),
-        ),
-      ),
-    );
-  }
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
