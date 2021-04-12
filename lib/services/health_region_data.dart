@@ -1,4 +1,6 @@
-Map _healthRegions = {
+List<String> provinces = ['AB', 'BC', 'MB', 'NB', 'ON', 'QC', 'YT'];
+
+Map<String, int> regionData = {
   'AB -	Calgary': 4832,
   'AB -	Central': 4833,
   'AB -	Edmonton': 4834,

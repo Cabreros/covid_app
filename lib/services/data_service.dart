@@ -25,11 +25,40 @@ class DataService {
     }
   }
 
-  Future<HealthRegion> getHealthCodeSummary(int num) async {
+  Future<HealthRegion> getHealthCodeSummary(int num, [DateTime date]) async {
     Map<String, String> requestHeaders;
-    requestHeaders = {
-      'loc': num.toString(),
-    };
+
+    if (date != null) {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final aDate = DateTime(date.year, date.month, date.day);
+
+      if (aDate == today) {
+        date = date.subtract(Duration(
+          days: 1,
+        ));
+      }
+
+      String day = date.day.toString();
+      String month = date.month.toString();
+      String year = date.year.toString();
+
+      if (day.length == 1) {
+        day = '0' + day;
+      }
+      if (month.length == 1) {
+        month = '0' + month;
+      }
+
+      requestHeaders = {
+        'loc': num.toString(),
+        'date': day + '-' + month + '-' + year,
+      };
+    } else {
+      requestHeaders = {
+        'loc': num.toString(),
+      };
+    }
 
     final uri = Uri.https('api.opencovid.ca', '/summary', requestHeaders);
     final response = await http.get(uri);

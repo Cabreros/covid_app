@@ -1,5 +1,6 @@
 import 'package:current_cases_app/services/data_service.dart';
-import 'package:current_cases_app/services/health_region_data.dart';
+import 'package:current_cases_app/services/health_region_data.dart'
+    as healthRegionData;
 import 'package:current_cases_app/services/health_region_model.dart';
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
@@ -12,12 +13,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _province = 'ON';
-  List<String> _provinces = ['AB', 'BC', 'MB', 'NB', 'ON', 'QC', 'YT'];
+  String _region = 'ON - Toronto';
+  List<String> _provinces = healthRegionData.provinces;
   DateTime selectedDate = DateTime.now();
   Future<Summary> futSummary =
       DataService().getProvinceSummary('MB', DateTime.now());
+  var _healthRegionData = healthRegionData.regionData;
   Future<HealthRegion> healthRegionSummary =
-      DataService().getHealthCodeSummary(3595);
+      DataService().getHealthCodeSummary(3595, DateTime.now());
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _appBar(),
           _header(),
           _bodyStats(_province),
-          _zoneByCode(_province)
+          _zoneByCode(_region)
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -192,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           StatsCard(
                             label: 'Recovered',
                             stat: summary.culRecovered.toInt().toString(),
-                            color: Color(0xff85dcba),
+                            color: Color(0xff9ad9db),
                           ),
                           StatsCard(
                             label: 'Deaths',
@@ -224,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SliverToBoxAdapter _zoneByCode(_province) {
+  SliverToBoxAdapter _zoneByCode(region) {
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -235,13 +238,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: FutureBuilder(
-          future: healthRegionSummary,
+          future: DataService().getHealthCodeSummary(
+              healthRegionData.regionData[region], selectedDate),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
+                return Center(child: CircularProgressIndicator());
               default:
                 if (snapshot.hasError)
                   return Text('Error: ${snapshot.error}');
@@ -254,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 5.0),
                         child: Text(
-                          'Health Region Summary',
+                          'Region Summary',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 20.0,
@@ -264,14 +266,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Center(
                         child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
                           decoration: BoxDecoration(
                             color: Color(0xffe27d60),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              value: _province,
-                              items: _provinces
+                              dropdownColor: Color(0xffe27d60),
+                              value: _region,
+                              items: _healthRegionData.keys
+                                  .toList()
                                   .map(
                                     (e) => DropdownMenuItem(
                                       child: Row(
@@ -279,8 +284,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Text(
                                             e,
                                             style: TextStyle(
-                                                fontFamily: 'Futura',
-                                                fontSize: 15),
+                                              fontFamily: 'Futura',
+                                              fontSize: 15,
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -290,15 +297,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .toList(),
                               onChanged: (String value) {
                                 setState(() {
-                                  _province = value;
-                                  futSummary = DataService()
-                                      .getProvinceSummary(value, selectedDate);
+                                  _region = value;
+                                  healthRegionSummary =
+                                      DataService().getHealthCodeSummary(
+                                    _healthRegionData[value],
+                                    selectedDate,
+                                  );
                                 });
                               },
                             ),
                           ),
                         ),
                       ),
+                      Row(
+                        children: [
+                          StatsCard(
+                            label: 'Cases',
+                            stat: regionSummary.cases.toString(),
+                            color: Color(0xffc38d9e),
+                          ),
+                          StatsCard(
+                            label: 'Deaths',
+                            stat: regionSummary.deaths.toInt().toString(),
+                            color: Color(0xffe27d60),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          StatsCard(
+                            label: 'Total Cases',
+                            stat: regionSummary.culCases.toString(),
+                          ),
+                          StatsCard(
+                            label: 'Total Deaths',
+                            stat: regionSummary.culDeaths.toInt().toString(),
+                            color: Color(0xffe8a87c),
+                          ),
+                        ],
+                      )
                     ],
                   );
                 }
