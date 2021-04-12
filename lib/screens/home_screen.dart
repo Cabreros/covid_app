@@ -1,4 +1,5 @@
 import 'package:current_cases_app/services/data_service.dart';
+import 'package:current_cases_app/services/health_region_data.dart';
 import 'package:current_cases_app/services/health_region_model.dart';
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
@@ -10,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _province = 'MB';
+  String _province = 'ON';
   List<String> _provinces = ['AB', 'BC', 'MB', 'NB', 'ON', 'QC', 'YT'];
   DateTime selectedDate = DateTime.now();
   Future<Summary> futSummary =
@@ -261,7 +262,43 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      Text(regionSummary.date)
+                      Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xffe27d60),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: _province,
+                              items: _provinces
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      child: Row(
+                                        children: <Widget>[
+                                          Text(
+                                            e,
+                                            style: TextStyle(
+                                                fontFamily: 'Futura',
+                                                fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
+                                      value: e,
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (String value) {
+                                setState(() {
+                                  _province = value;
+                                  futSummary = DataService()
+                                      .getProvinceSummary(value, selectedDate);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   );
                 }
