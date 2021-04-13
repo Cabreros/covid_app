@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: FutureBuilder(
           future: DataService()
-              .getProvinceSummary(province, DateTime.now()), // async work
+              .getProvinceSummary(province, selectedDate), // async work
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
@@ -172,16 +172,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 5.0),
-                        child: Text(
-                          'Updated as of: ' +
-                              summary.date.toString() +
-                              'selected date ' +
-                              selectedDate.toString(),
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 10.0,
-                            fontFamily: 'Futura',
+                            horizontal: 10.0, vertical: 6.0),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            'There are ${summary.cases} new cases in ${summary.province} on ${summary.date}.',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14.0,
+                              fontFamily: 'Futura',
+                            ),
                           ),
                         ),
                       ),
@@ -339,7 +339,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Color(0xffe8a87c),
                           ),
                         ],
-                      )
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 3.0),
+                        child: Text(
+                          'All data updated as of: ' +
+                              regionSummary.date.toString(),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12.0,
+                            fontFamily: 'Futura',
+                          ),
+                        ),
+                      ),
                     ],
                   );
                 }
