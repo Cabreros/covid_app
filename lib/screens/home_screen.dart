@@ -239,11 +239,15 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: FutureBuilder(
           future: DataService().getHealthCodeSummary(
-              healthRegionData.regionData[region], selectedDate),
+            healthRegionData.regionData[region],
+            selectedDate,
+          ),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
               default:
                 if (snapshot.hasError)
                   return Text('Error: ${snapshot.error}');
