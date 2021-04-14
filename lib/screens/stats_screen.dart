@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:current_cases_app/services/chart_testing_data.dart' as data;
 
 class StatsScreen extends StatefulWidget {

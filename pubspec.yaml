@@ -23,8 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  charts_flutter: ^0.10.0
   cupertino_icons: ^1.0.2
-  fl_chart: ^0.35.0
   http: ^0.13.1
 
 dev_dependencies:
