@@ -1,10 +1,10 @@
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/services/health_region_data.dart'
     as healthRegionData;
-import 'package:current_cases_app/services/health_region_model.dart';
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -13,14 +13,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _province = 'ON';
-  String _region = 'ON - Toronto';
   List<String> _provinces = healthRegionData.provinces;
   DateTime selectedDate = DateTime.now();
   Future<Summary> futSummary =
       DataService().getProvinceSummary('MB', DateTime.now());
-  var _healthRegionData = healthRegionData.regionData;
-  Future<HealthRegion> healthRegionSummary =
-      DataService().getHealthCodeSummary(3595, DateTime.now());
+  var format = DateFormat.yMMMMd('en_US');
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
           _appBar(),
           _header(),
           _bodyStats(_province),
-          _zoneByCode(_region)
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -45,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SliverAppBar(
       backgroundColor: Color(0xffe27d60),
       title: Text(
-        'Current Case Statistics',
+        'Daily Summary',
         style: TextStyle(
           color: Colors.white,
           fontSize: 23.0,
@@ -68,10 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.symmetric(horizontal: 15.0),
         decoration: BoxDecoration(
           color: Color(0xffe27d60),
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(25.0),
-            bottomRight: Radius.circular(25.0),
-          ),
+          // borderRadius: BorderRadius.only(
+          //   bottomLeft: Radius.circular(25.0),
+          //   bottomRight: Radius.circular(25.0),
+          // ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    'Daily Summary',
+                    format.format(selectedDate),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24.0,
@@ -146,8 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
   SliverToBoxAdapter _bodyStats(province) {
     return SliverToBoxAdapter(
       child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 15.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Color(0xffe27d60),
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(25.0),
             bottomRight: Radius.circular(25.0),
@@ -171,16 +168,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 6.0),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'There are ${summary.cases} new cases in ${summary.province} on ${summary.date}.',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 14.0,
-                              fontFamily: 'Futura',
+                        margin: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          color: Color(0xff7eca9c),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 6.0),
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'There are ${summary.cases} new cases in ${summary.province}.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24.0,
+                                fontFamily: 'Futura',
+                              ),
                             ),
                           ),
                         ),
@@ -200,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           StatsCard(
                             label: 'Deaths',
                             stat: summary.deaths.toInt().toString(),
-                            color: Color(0xffe27d60),
+                            color: Color(0xffd44000),
                           ),
                         ],
                       ),
@@ -216,142 +221,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Color(0xffe8a87c),
                           ),
                         ],
-                      ),
-                    ],
-                  );
-                }
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  SliverToBoxAdapter _zoneByCode(region) {
-    return SliverToBoxAdapter(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(25.0),
-            bottomRight: Radius.circular(25.0),
-          ),
-        ),
-        child: FutureBuilder(
-          future: DataService().getHealthCodeSummary(
-            healthRegionData.regionData[region],
-            selectedDate,
-          ),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              default:
-                if (snapshot.hasError)
-                  return Text('Error: ${snapshot.error}');
-                else {
-                  var regionSummary = snapshot.data;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 5.0),
-                        child: Text(
-                          'Region Summary',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20.0,
-                            fontFamily: 'Futura',
-                          ),
-                        ),
-                      ),
-                      Center(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          decoration: BoxDecoration(
-                            color: Color(0xffe27d60),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              dropdownColor: Color(0xffe27d60),
-                              value: _region,
-                              items: _healthRegionData.keys
-                                  .toList()
-                                  .map(
-                                    (e) => DropdownMenuItem(
-                                      child: Row(
-                                        children: <Widget>[
-                                          Text(
-                                            e,
-                                            style: TextStyle(
-                                              fontFamily: 'Futura',
-                                              fontSize: 15,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      value: e,
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (String value) {
-                                setState(() {
-                                  _region = value;
-                                  healthRegionSummary =
-                                      DataService().getHealthCodeSummary(
-                                    _healthRegionData[value],
-                                    selectedDate,
-                                  );
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          StatsCard(
-                            label: 'Cases',
-                            stat: regionSummary.cases.toString(),
-                            color: Color(0xffc38d9e),
-                          ),
-                          StatsCard(
-                            label: 'Deaths',
-                            stat: regionSummary.deaths.toInt().toString(),
-                            color: Color(0xffe27d60),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          StatsCard(
-                            label: 'Total Cases',
-                            stat: regionSummary.culCases.toString(),
-                          ),
-                          StatsCard(
-                            label: 'Total Deaths',
-                            stat: regionSummary.culDeaths.toInt().toString(),
-                            color: Color(0xffe8a87c),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 3.0),
-                        child: Text(
-                          'All data updated as of: ' +
-                              regionSummary.date.toString(),
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12.0,
-                            fontFamily: 'Futura',
-                          ),
-                        ),
                       ),
                     ],
                   );
