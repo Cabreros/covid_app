@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:current_cases_app/services/summary_model.dart';
+import 'package:current_cases_app/services/vaccine_model.dart';
 import 'package:http/http.dart' as http;
 
 import 'health_region_model.dart';
@@ -20,6 +21,30 @@ class DataService {
           .toList();
 
       return allSummary;
+    } else {
+      throw "unable to retrieve posts.";
+    }
+  }
+
+  Future<List<Vaccine>> getVaccineList() async {
+    Map<String, String> requestHeaders = {
+      'loc': 'ON',
+      'after': '2021-03-15',
+      'stat': 'avaccine'
+    };
+    final uri = Uri.https('api.opencovid.ca', '/timeseries', requestHeaders);
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      List<dynamic> body = jsonDecode(response.body)['avaccine'];
+
+      List<Vaccine> allVaccine = body
+          .map(
+            (dynamic item) => Vaccine.fromJson(item),
+          )
+          .toList();
+
+      return allVaccine;
     } else {
       throw "unable to retrieve posts.";
     }
