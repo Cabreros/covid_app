@@ -52,17 +52,6 @@ class _StatsScreenState extends State<StatsScreen> {
     );
   }
 
-  SliverToBoxAdapter _chartTest() {
-    return SliverToBoxAdapter(
-      child: Container(
-        height: 1000.0,
-        decoration: BoxDecoration(
-          color: Colors.black,
-        ),
-      ),
-    );
-  }
-
   SliverToBoxAdapter _zoneByCode(region) {
     return SliverToBoxAdapter(
       child: Container(
