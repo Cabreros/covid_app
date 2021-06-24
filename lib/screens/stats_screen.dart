@@ -70,8 +70,16 @@ class _StatsScreenState extends State<StatsScreen> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return Center(
-                  child: CircularProgressIndicator(),
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 40,
+                    ),
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 40,
+                    ),
+                  ],
                 );
               default:
                 if (snapshot.hasError)

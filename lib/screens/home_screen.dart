@@ -5,6 +5,7 @@ import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -27,13 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
           _appBar(),
           _header(),
           _bodyStats(_province),
+          _vaxCharts(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xffe27d60),
-        onPressed: () => _selectDate(context),
-        child: const Icon(Icons.calendar_today_rounded),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: Color(0xffe27d60),
+      //   onPressed: () => _selectDate(context),
+      //   child: const Icon(Icons.calendar_today_rounded),
+      // ),
     );
   }
 
@@ -50,8 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications),
-          onPressed: null,
+          icon: const Icon(Icons.calendar_today_rounded),
+          onPressed: () => _selectDate(context),
         )
       ],
       floating: true,
@@ -156,8 +158,16 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return Center(
-                  child: CircularProgressIndicator(),
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 40,
+                    ),
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 40,
+                    )
+                  ],
                 );
               default:
                 if (snapshot.hasError)
@@ -232,6 +242,57 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  SliverToBoxAdapter _vaxCharts() {
+    List<charts.Series<Vax, String>> _createSampleData() {
+      final data = [
+        new Vax(7576624, 'Single Dose'),
+        new Vax(473759, 'Double Dose'),
+        new Vax(14745040 - 473759 - 7576624, 'Rest of Pop')
+      ];
+
+      return [
+        new charts.Series<Vax, String>(
+          id: 'Sales',
+          domainFn: (Vax sales, _) => sales.label,
+          measureFn: (Vax sales, _) => sales.pop,
+          data: data,
+          labelAccessorFn: (Vax sales, _) => '${sales.pop}',
+        )
+      ];
+    }
+
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: EdgeInsets.all(15.0),
+        child: Row(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Current Vaccinations By The Numbers',
+                ),
+                SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: charts.PieChart(
+                    _createSampleData(),
+                    animate: false,
+                    defaultRenderer: new charts.ArcRendererConfig(
+                      arcWidth: 60,
+                      arcRendererDecorators: [new charts.ArcLabelDecorator()],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -243,4 +304,11 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedDate = picked;
       });
   }
+}
+
+class Vax {
+  final int pop;
+  final String label;
+
+  Vax(this.pop, this.label);
 }
