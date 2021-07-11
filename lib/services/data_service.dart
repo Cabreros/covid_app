@@ -26,9 +26,9 @@ class DataService {
     }
   }
 
-  Future<List<Vaccine>> getVaccineList() async {
+  Future<List<Vaccine>> getVaccineList(province) async {
     Map<String, String> requestHeaders = {
-      'loc': 'ON',
+      'loc': province,
       'after': '2021-03-15',
       'stat': 'avaccine'
     };
