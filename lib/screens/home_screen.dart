@@ -6,6 +6,7 @@ import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -24,7 +25,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
-        slivers: [_appBar(), _header(), _bodyStats(_province), _newApiTest()],
+        slivers: [
+          _appBar(),
+          _header(),
+          _bodyStats(_province),
+          _newApiTest(),
+          _reopeningPages()
+        ],
       ),
       // floatingActionButton: FloatingActionButton(
       //   backgroundColor: Color(0xffe27d60),
@@ -242,25 +249,65 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         children: [
           FutureBuilder(
-              future: OntarioService()
-                  .getCaseData(new DateTime.now()), // async work
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return Center(
-                      child: CircularProgressIndicator(),
+            future:
+                OntarioService().getCaseData(new DateTime.now()), // async work
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                default:
+                  if (snapshot.hasError)
+                    return Text('Error: ${snapshot.error}');
+                  else {
+                    return Container(
+                      padding: EdgeInsets.all(10.0),
+                      child: Text(snapshot.data.toString()),
                     );
-                  default:
-                    if (snapshot.hasError)
-                      return Text('Error: ${snapshot.error}');
-                    else {
-                      return Container(
-                        padding: EdgeInsets.all(10.0),
-                        child: Text(snapshot.data.toString()),
-                      );
-                    }
-                }
-              }),
+                  }
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  SliverToBoxAdapter _reopeningPages() {
+    PageController controller = PageController();
+
+    return SliverToBoxAdapter(
+      child: Column(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: PageView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 3,
+              controller: controller,
+              itemBuilder: (context, index) {
+                return Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Colors.grey,
+                  ),
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  width: MediaQuery.of(context).size.width - 20,
+                  child: Text('test'),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SmoothPageIndicator(
+                controller: controller, // PageController
+                count: 3,
+                effect: ExpandingDotsEffect(), // your preferred effect
+                onDotClicked: (index) {}),
+          ),
         ],
       ),
     );
