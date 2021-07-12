@@ -1,6 +1,7 @@
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/services/health_region_data.dart'
     as healthRegionData;
+import 'package:current_cases_app/services/ontario_service.dart';
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
-        slivers: [
-          _appBar(),
-          _header(),
-          _bodyStats(_province),
-        ],
+        slivers: [_appBar(), _header(), _bodyStats(_province), _newApiTest()],
       ),
       // floatingActionButton: FloatingActionButton(
       //   backgroundColor: Color(0xffe27d60),
@@ -236,6 +233,35 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           },
         ),
+      ),
+    );
+  }
+
+  SliverToBoxAdapter _newApiTest() {
+    return SliverToBoxAdapter(
+      child: Column(
+        children: [
+          FutureBuilder(
+              future: OntarioService()
+                  .getCaseData(new DateTime.now()), // async work
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  default:
+                    if (snapshot.hasError)
+                      return Text('Error: ${snapshot.error}');
+                    else {
+                      return Container(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(snapshot.data.toString()),
+                      );
+                    }
+                }
+              }),
+        ],
       ),
     );
   }

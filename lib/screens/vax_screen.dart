@@ -27,7 +27,7 @@ class _VaxScreenState extends State<VaxScreen> {
         slivers: [
           _titleBar(),
           _header(),
-          _appBar(),
+          _barChart(),
         ],
       ),
       // floatingActionButton: FloatingActionButton(
@@ -140,7 +140,7 @@ class _VaxScreenState extends State<VaxScreen> {
     );
   }
 
-  SliverToBoxAdapter _appBar() {
+  SliverToBoxAdapter _barChart() {
     return SliverToBoxAdapter(
       child: Column(
         children: [
@@ -158,14 +158,19 @@ class _VaxScreenState extends State<VaxScreen> {
                     else {
                       List<Vaccine> data = snapshot.data;
                       var df = new DateFormat('dd-MM-yyyy');
-                      List<charts.Series<Vaccine, DateTime>> series = [
-                        charts.Series(
-                            id: "Vaccinations",
-                            data: data,
-                            domainFn: (Vaccine vax, _) =>
-                                df.parse(vax.dateVaccineAdministered),
-                            measureFn: (Vaccine vax, _) => vax.avaccine),
-                      ];
+
+                      List<charts.Series<Vaccine, DateTime>>
+                          _createSampleData() {
+                        return [
+                          charts.Series(
+                              id: "Vaccinations",
+                              data: data,
+                              domainFn: (Vaccine vax, _) =>
+                                  df.parse(vax.dateVaccineAdministered),
+                              measureFn: (Vaccine vax, _) => vax.avaccine),
+                        ];
+                      }
+
                       return Container(
                         padding: EdgeInsets.all(10.0),
                         child: Column(
@@ -183,8 +188,8 @@ class _VaxScreenState extends State<VaxScreen> {
                             ),
                             Container(
                               height: 400.0,
-                              child:
-                                  charts.TimeSeriesChart(series, animate: true),
+                              child: charts.TimeSeriesChart(_createSampleData(),
+                                  animate: true),
                             )
                           ],
                         ),
