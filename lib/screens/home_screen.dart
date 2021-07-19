@@ -288,14 +288,48 @@ class _HomeScreenState extends State<HomeScreen> {
               controller: controller,
               itemBuilder: (context, index) {
                 return Container(
-                  padding: EdgeInsets.all(10.0),
+                  // padding: EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
-                    color: Colors.grey,
+                    color: Colors.yellow,
                   ),
                   margin: EdgeInsets.symmetric(horizontal: 10.0),
                   width: MediaQuery.of(context).size.width - 20,
-                  child: Text('test'),
+                  child: Column(children: [
+                    Container(
+                      padding: EdgeInsets.all(10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                              'Vaccination rate plus key public health and health care indicators'),
+                          Text('Step 1'),
+                          Text('60%'),
+                          Text('Adults with one dose'),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 20,
+                      width: 5000,
+                      color: Colors.white,
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(10.0),
+                          color: Colors.yellow,
+                          child: Column(
+                            children: [
+                              Text('Permit with restrictions'),
+                              Text(
+                                  'Outdoor spaces begin reopening, limited indoor settings with restrictions')
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ]),
                 );
               },
             ),
