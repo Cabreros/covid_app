@@ -39,9 +39,10 @@ class OntarioService {
       var body = jsonDecode(response.body)['result']['records'];
 
       if (body.length < 1) {
-        return null;
+        return 'Error getting cases';
       } else {
-        return body[0]['Total'];
+        int length = body.length - 1;
+        return body[length]['Total'];
       }
     } else {
       throw "unable to retrieve posts.";

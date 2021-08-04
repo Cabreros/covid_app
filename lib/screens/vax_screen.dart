@@ -228,7 +228,7 @@ class _VaxScreenState extends State<VaxScreen> {
                   return Text('Error: ${snapshot.error}');
                 else {
                   var summary = snapshot.data;
-                  MediaQueryData queryData = MediaQuery.of(context);
+                  // MediaQueryData queryData = MediaQuery.of(context);
                   var formatter = NumberFormat('###,###,000');
 
                   final data = [
