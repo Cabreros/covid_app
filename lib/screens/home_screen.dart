@@ -30,15 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
           _appBar(),
           _header(),
           _bodyStats(_province),
-          _newApiTest(),
+          _newApiTest(selectedDate),
           _reopeningPages()
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: Color(0xffe27d60),
-      //   onPressed: () => _selectDate(context),
-      //   child: const Icon(Icons.calendar_today_rounded),
-      // ),
     );
   }
 
@@ -245,13 +240,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SliverToBoxAdapter _newApiTest() {
+  SliverToBoxAdapter _newApiTest(date) {
     return SliverToBoxAdapter(
       child: Column(
         children: [
           FutureBuilder(
-            future:
-                OntarioService().getCaseData(new DateTime.now()), // async work
+            future: OntarioService().getCaseData(date), // async work
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -300,14 +294,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: EdgeInsets.all(10.0),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                               'Vaccination rate plus key public health and health care indicators'),
-                          Text('Step ${index + 1}'),
-                          Text(Reopening().percentages[index]),
-                          Text('Adults with one dose'),
+                          Text(
+                            'Step ${index + 1}',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          Text(
+                            Reopening().percentages[index],
+                            style: TextStyle(fontSize: 25),
+                          ),
+                          Text(
+                            'Adults with one dose',
+                            textAlign: TextAlign.center,
+                          ),
                           Text(Reopening().percentages2[index]),
+                          SizedBox(
+                            height: 7,
+                          ),
                           ElevatedButton(
                               // style: ,
                               onPressed: () {
@@ -326,49 +332,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    // Container(
-                    //   height: 20,
-                    //   width: 5000,
-                    //   color: Colors.white,
-                    // ),
-                    // Column(
-                    //   children: [
-                    //     Container(
-                    //       padding: EdgeInsets.all(10.0),
-                    //       color: Reopening().colors1[index],
-                    //       child: Column(
-                    //         children: [
-                    //           Text('Permit with restrictions'),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //     SingleChildScrollView(
-                    //       physics: ScrollPhysics(),
-                    //       child: Column(
-                    //         children: <Widget>[
-                    //           Text('Hey'),
-                    //           ListView.builder(
-                    //               physics: NeverScrollableScrollPhysics(),
-                    //               shrinkWrap: true,
-                    //               itemCount: 18,
-                    //               itemBuilder: (context, index) {
-                    //                 return Text('Some text');
-                    //               })
-                    //         ],
-                    //       ),
-                    //     ),
-
-                    //     // Container(
-                    //     //   color: Reopening().colors2[index],
-                    //     //   padding: EdgeInsets.all(10.0),
-                    //     //   child: ListView.builder(
-                    //     //       itemCount: 3,
-                    //     //       itemBuilder: (context, index) {
-                    //     //         return Text(Reopening().step1[index]);
-                    //     //       }),
-                    //     // ),
-                    //   ],
-                    // )
                   ]),
                 );
               },
