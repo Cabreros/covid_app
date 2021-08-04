@@ -2,6 +2,7 @@ import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/services/health_region_data.dart'
     as healthRegionData;
 import 'package:current_cases_app/services/ontario_service.dart';
+import 'package:current_cases_app/services/reopening_data.dart';
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
@@ -275,13 +276,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   SliverToBoxAdapter _reopeningPages() {
-    PageController controller = PageController();
+    PageController controller = PageController(initialPage: 2);
 
     return SliverToBoxAdapter(
       child: Column(
         children: [
           Container(
-            height: MediaQuery.of(context).size.height * 0.5,
+            height: 200,
             child: PageView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: 3,
@@ -291,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // padding: EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
-                    color: Colors.yellow,
+                    color: Reopening().colors1[index],
                   ),
                   margin: EdgeInsets.symmetric(horizontal: 10.0),
                   width: MediaQuery.of(context).size.width - 20,
@@ -303,32 +304,71 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text(
                               'Vaccination rate plus key public health and health care indicators'),
-                          Text('Step 1'),
-                          Text('60%'),
+                          Text('Step ${index + 1}'),
+                          Text(Reopening().percentages[index]),
                           Text('Adults with one dose'),
+                          Text(Reopening().percentages2[index]),
+                          ElevatedButton(
+                              // style: ,
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                            'Stage ${index + 1} - Key Highlights'),
+                                        content: stageAlertDialog(index),
+                                      );
+                                    });
+                              },
+                              child: Text(
+                                  'Click for detailed stage ${index + 1} information'))
                         ],
                       ),
                     ),
-                    Container(
-                      height: 20,
-                      width: 5000,
-                      color: Colors.white,
-                    ),
-                    Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(10.0),
-                          color: Colors.yellow,
-                          child: Column(
-                            children: [
-                              Text('Permit with restrictions'),
-                              Text(
-                                  'Outdoor spaces begin reopening, limited indoor settings with restrictions')
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
+                    // Container(
+                    //   height: 20,
+                    //   width: 5000,
+                    //   color: Colors.white,
+                    // ),
+                    // Column(
+                    //   children: [
+                    //     Container(
+                    //       padding: EdgeInsets.all(10.0),
+                    //       color: Reopening().colors1[index],
+                    //       child: Column(
+                    //         children: [
+                    //           Text('Permit with restrictions'),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     SingleChildScrollView(
+                    //       physics: ScrollPhysics(),
+                    //       child: Column(
+                    //         children: <Widget>[
+                    //           Text('Hey'),
+                    //           ListView.builder(
+                    //               physics: NeverScrollableScrollPhysics(),
+                    //               shrinkWrap: true,
+                    //               itemCount: 18,
+                    //               itemBuilder: (context, index) {
+                    //                 return Text('Some text');
+                    //               })
+                    //         ],
+                    //       ),
+                    //     ),
+
+                    //     // Container(
+                    //     //   color: Reopening().colors2[index],
+                    //     //   padding: EdgeInsets.all(10.0),
+                    //     //   child: ListView.builder(
+                    //     //       itemCount: 3,
+                    //     //       itemBuilder: (context, index) {
+                    //     //         return Text(Reopening().step1[index]);
+                    //     //       }),
+                    //     // ),
+                    //   ],
+                    // )
                   ]),
                 );
               },
@@ -343,6 +383,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 onDotClicked: (index) {}),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget stageAlertDialog(number) {
+    List steps = [Reopening().step1, Reopening().step2, Reopening().step3];
+    return Container(
+      height: MediaQuery.of(context).size.height * .60,
+      width: MediaQuery.of(context).size.width,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: steps[number].length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text('\u2022 ' + steps[number][index]),
+          );
+        },
       ),
     );
   }
