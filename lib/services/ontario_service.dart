@@ -38,11 +38,80 @@ class OntarioService {
     if (response.statusCode == 200) {
       var body = jsonDecode(response.body)['result']['records'];
 
-      if (body.length < 1) {
+      if (body.length == null) {
         return 'Error getting cases';
+      } else if (body.length > 1) {
+        var json;
+        for (var result in body) {
+          int highest = 0;
+          int id = result['_id'];
+
+          if (id > highest) {
+            highest = id;
+            json = result;
+          }
+          return json;
+        }
       } else {
-        int length = body.length - 1;
-        return body[length]['Total'];
+        return body;
+      }
+    } else {
+      throw "unable to retrieve posts.";
+    }
+  }
+
+  Future<dynamic> getVaccinationData([DateTime date]) async {
+    Map<String, String> requestHeaders;
+
+    if (date != null) {
+      final now = DateTime.now();
+
+      String day = now.day.toString();
+      String month = now.month.toString();
+      String year = now.year.toString();
+
+      if (day.length == 1) {
+        day = '0' + day;
+      }
+      if (month.length == 1) {
+        month = '0' + month;
+      }
+
+      requestHeaders = {
+        'resource_id': '8a89caa9-511c-4568-af89-7f2174b4378c',
+        'q': year + '-' + month + '-' + day,
+        'limit': '5',
+      };
+    } else {
+      requestHeaders = {
+        'resource_id': '8a89caa9-511c-4568-af89-7f2174b4378c',
+        'limit': '5',
+      };
+    }
+
+    final uri = Uri.https(
+        'data.ontario.ca', '/api/3/action/datastore_search', requestHeaders);
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      var body = jsonDecode(response.body)['result']['records'];
+
+      if (body.length == null) {
+        return 'Error getting cases';
+      } else if (body.length > 1) {
+        var json;
+        for (var result in body) {
+          int highest = 0;
+          int id = result['_id'];
+
+          if (id > highest) {
+            highest = id;
+            json = result;
+          }
+          return json;
+        }
+      } else {
+        return body;
       }
     } else {
       throw "unable to retrieve posts.";
