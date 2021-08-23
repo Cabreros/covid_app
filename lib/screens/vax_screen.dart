@@ -1,9 +1,12 @@
 import 'package:current_cases_app/services/data_service.dart';
+import 'package:current_cases_app/services/new_vaccine_model.dart';
 import 'package:current_cases_app/services/ontario_service.dart';
 import 'package:current_cases_app/services/summary_model.dart';
+import 'package:current_cases_app/services/vaccine_cubit.dart';
 import 'package:current_cases_app/services/vaccine_model.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:current_cases_app/services/health_region_data.dart'
     as healthRegionData;
@@ -54,9 +57,9 @@ class _VaxScreenState extends State<VaxScreen> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.calendar_today_rounded),
-          onPressed: () => _selectDate(context),
-        )
+            icon: const Icon(Icons.calendar_today_rounded),
+            onPressed: () => {} //_selectDate(),;
+            )
       ],
       floating: true,
     );
@@ -208,80 +211,89 @@ class _VaxScreenState extends State<VaxScreen> {
   //pie chart
   SliverToBoxAdapter _vaxCharts() {
     return SliverToBoxAdapter(
-      child: FutureBuilder(
-          future:
-              OntarioService().getVaccinationData(selectedDate), // async work
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Column(
-                  children: [
-                    SizedBox(
-                      height: 40,
-                    ),
-                    CircularProgressIndicator(),
-                    SizedBox(
-                      height: 40,
-                    )
-                  ],
-                );
-              default:
-                if (snapshot.hasError)
-                  return Text('Error: ${snapshot.error}');
-                else {
-                  var summary = snapshot.data[0];
-                  double percentage =
-                      double.parse(summary['total_individuals_at_least_one']) /
-                          13034844;
-                  return Container(
-                    padding: EdgeInsets.all(15.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Current Vaccinations By The Numbers',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12.0,
-                            fontFamily: 'Futura',
-                          ),
-                        ),
-                        Text(summary.toString()),
-                        Padding(
-                          padding: EdgeInsets.all(15.0),
-                          child: new LinearPercentIndicator(
-                            width: MediaQuery.of(context).size.width - 75,
-                            animation: true,
-                            lineHeight: 20.0,
-                            animationDuration: 2500,
-                            percent: percentage,
-                            center: Text(
-                                (percentage * 100).toStringAsFixed(1) + '%'),
-                            linearStrokeCap: LinearStrokeCap.roundAll,
-                            progressColor: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-            }
-          }),
+      child: BlocBuilder<VaccineCubit, NewVaccine>(builder: (context, vaccine) {
+        if (vaccine == NewVaccine()) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        return Text(vaccine.rank.toString());
+      }),
     );
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2020, 3),
-        lastDate: DateTime.now());
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
+  // Future<void> _selectDate(BuildContext context) async {
+  //   final DateTime picked = await showDatePicker(
+  //       context: context,
+  //       initialDate: selectedDate,
+  //       firstDate: DateTime(2020, 3),
+  //       lastDate: DateTime.now());
+  //   if (picked != null && picked != selectedDate)
+  //     setState(() {
+  //       selectedDate = picked;
+  //     });
+  // }
+
+  FutureBuilder saved = FutureBuilder(
+      future: OntarioService().getVaccinationData(), // async work
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return Column(
+              children: [
+                SizedBox(
+                  height: 40,
+                ),
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 40,
+                )
+              ],
+            );
+          default:
+            if (snapshot.hasError)
+              return Text('Error: ${snapshot.error}');
+            else {
+              var summary = snapshot.data[0];
+              double percentage =
+                  double.parse(summary['total_individuals_at_least_one']) /
+                      13034844;
+              return Container(
+                padding: EdgeInsets.all(15.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Current Vaccinations By The Numbers',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12.0,
+                        fontFamily: 'Futura',
+                      ),
+                    ),
+                    Text(summary.toString()),
+                    Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: new LinearPercentIndicator(
+                        width: MediaQuery.of(context).size.width - 75,
+                        animation: true,
+                        lineHeight: 20.0,
+                        animationDuration: 2500,
+                        percent: percentage,
+                        center:
+                            Text((percentage * 100).toStringAsFixed(1) + '%'),
+                        linearStrokeCap: LinearStrokeCap.roundAll,
+                        progressColor: Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+        }
       });
-  }
 }
 
 class Vax {

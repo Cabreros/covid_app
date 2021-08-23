@@ -4,13 +4,14 @@ class Vaccine {
   var dateVaccineAdministered;
   var province;
 
-  Vaccine(
-      {this.avaccine,
-      this.cumulativeAvaccine,
-      this.dateVaccineAdministered,
-      this.province});
+  Vaccine({
+    this.avaccine,
+    this.cumulativeAvaccine,
+    this.dateVaccineAdministered,
+    this.province,
+  });
 
-  factory Vaccine.fromJson(Map<String, dynamic> json) {
+  factory Vaccine.fromJson(Map<dynamic, dynamic> json) {
     return Vaccine(
         avaccine: json['avaccine'],
         cumulativeAvaccine: json['cumulative_avaccine'],
