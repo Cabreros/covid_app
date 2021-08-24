@@ -9,3 +9,41 @@ class VaccineCubit extends Cubit<NewVaccine> {
 
   void getVaccineData() async => emit(await _dataService.getVaccinationData());
 }
+
+abstract class VaccineEvent {}
+
+class LoadVaccineEvent extends VaccineEvent {}
+
+abstract class VaccineState {}
+
+class LoadingVaccineEvent extends VaccineState {}
+
+class LoadedVaccineEvent extends VaccineState {
+  NewVaccine vaccine;
+  LoadedVaccineEvent({this.vaccine});
+}
+
+class FailedVaccineEvent extends VaccineState {
+  Error error;
+  FailedVaccineEvent({this.error});
+}
+
+class VaccineBloc extends Bloc<VaccineEvent, VaccineState> {
+  final _dataService = OntarioService();
+
+  VaccineBloc() : super(LoadingVaccineEvent());
+
+  @override
+  Stream<VaccineState> mapEventToState(VaccineEvent event) async* {
+    if (event is LoadVaccineEvent) {
+      yield LoadingVaccineEvent();
+    }
+
+    try {
+      final data = await _dataService.getVaccinationData();
+      yield LoadedVaccineEvent(vaccine: data);
+    } catch (e) {
+      yield FailedVaccineEvent(error: e);
+    }
+  }
+}

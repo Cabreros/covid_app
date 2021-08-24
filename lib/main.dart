@@ -17,8 +17,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'Futura',
         ),
-        home: BlocProvider<VaccineCubit>(
-            create: (context) => VaccineCubit()..getVaccineData(),
+        home: BlocProvider<VaccineBloc>(
+            create: (context) => VaccineBloc()..add(LoadVaccineEvent()),
             child: BottomNavScreen()));
   }
 }

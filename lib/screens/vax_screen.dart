@@ -211,14 +211,20 @@ class _VaxScreenState extends State<VaxScreen> {
   //pie chart
   SliverToBoxAdapter _vaxCharts() {
     return SliverToBoxAdapter(
-      child: BlocBuilder<VaccineCubit, NewVaccine>(builder: (context, vaccine) {
-        if (vaccine == NewVaccine()) {
+      child: BlocBuilder<VaccineBloc, VaccineState>(builder: (context, state) {
+        if (state is LoadingVaccineEvent) {
           return Center(
             child: CircularProgressIndicator(),
           );
+        } else if (state is LoadedVaccineEvent) {
+          double percentage =
+              double.parse(state.vaccine.totalIndividualsAtLeastOne) / 13034844;
+          return Text(percentage.toString());
+        } else if (state is FailedVaccineEvent) {
+          return Text(state.error.toString());
+        } else {
+          return Container();
         }
-
-        return Text(vaccine.rank.toString());
       }),
     );
   }
