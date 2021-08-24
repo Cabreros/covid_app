@@ -14,6 +14,8 @@ abstract class VaccineEvent {}
 
 class LoadVaccineEvent extends VaccineEvent {}
 
+class PullToRefreshEvent extends VaccineEvent {}
+
 abstract class VaccineState {}
 
 class LoadingVaccineEvent extends VaccineState {}
@@ -35,7 +37,7 @@ class VaccineBloc extends Bloc<VaccineEvent, VaccineState> {
 
   @override
   Stream<VaccineState> mapEventToState(VaccineEvent event) async* {
-    if (event is LoadVaccineEvent) {
+    if (event is LoadVaccineEvent || event is PullToRefreshEvent) {
       yield LoadingVaccineEvent();
     }
 

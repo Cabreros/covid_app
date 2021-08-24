@@ -1,7 +1,5 @@
 import 'package:current_cases_app/screens/bottom_nav_screen.dart';
-import 'package:current_cases_app/services/vaccine_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,8 +15,6 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'Futura',
         ),
-        home: BlocProvider<VaccineBloc>(
-            create: (context) => VaccineBloc()..add(LoadVaccineEvent()),
-            child: BottomNavScreen()));
+        home: BottomNavScreen());
   }
 }

@@ -106,8 +106,8 @@ class OntarioService {
           highest = id;
           json = result;
         }
-        return NewVaccine.fromJson(json);
       }
+      return NewVaccine.fromJson(json);
     } catch (e) {
       return e;
     }
