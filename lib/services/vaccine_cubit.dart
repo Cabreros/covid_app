@@ -18,11 +18,11 @@ class PullToRefreshEvent extends VaccineEvent {}
 
 abstract class VaccineState {}
 
-class LoadingVaccineEvent extends VaccineState {}
+class LoadingVaccineState extends VaccineState {}
 
-class LoadedVaccineEvent extends VaccineState {
+class LoadedVaccineState extends VaccineState {
   NewVaccine vaccine;
-  LoadedVaccineEvent({this.vaccine});
+  LoadedVaccineState({this.vaccine});
 }
 
 class FailedVaccineEvent extends VaccineState {
@@ -33,17 +33,17 @@ class FailedVaccineEvent extends VaccineState {
 class VaccineBloc extends Bloc<VaccineEvent, VaccineState> {
   final _dataService = OntarioService();
 
-  VaccineBloc() : super(LoadingVaccineEvent());
+  VaccineBloc() : super(LoadingVaccineState());
 
   @override
   Stream<VaccineState> mapEventToState(VaccineEvent event) async* {
-    if (event is LoadVaccineEvent || event is PullToRefreshEvent) {
-      yield LoadingVaccineEvent();
+    if (event is LoadVaccineEvent) {
+      yield LoadingVaccineState();
     }
 
     try {
       final data = await _dataService.getVaccinationData();
-      yield LoadedVaccineEvent(vaccine: data);
+      yield LoadedVaccineState(vaccine: data);
     } catch (e) {
       yield FailedVaccineEvent(error: e);
     }

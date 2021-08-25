@@ -64,10 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.symmetric(horizontal: 15.0),
         decoration: BoxDecoration(
           color: Color(0xffe27d60),
-          // borderRadius: BorderRadius.only(
-          //   bottomLeft: Radius.circular(25.0),
-          //   bottomRight: Radius.circular(25.0),
-          // ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,11 +115,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                           .toList(),
                       onChanged: (String value) {
-                        setState(() {
-                          _province = value;
-                          futSummary = DataService()
-                              .getProvinceSummary(value, selectedDate);
-                        });
+                        setState(
+                          () {
+                            _province = value;
+                            futSummary = DataService()
+                                .getProvinceSummary(value, selectedDate);
+                          },
+                        );
                       },
                     ),
                   ),
@@ -245,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         children: [
           FutureBuilder(
-            future: OntarioService().getCaseData(date), // async work
+            future: OntarioService().getCaseData(), // async work
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:

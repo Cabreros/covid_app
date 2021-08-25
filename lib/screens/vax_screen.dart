@@ -1,6 +1,6 @@
 import 'package:current_cases_app/services/data_service.dart';
+import 'package:current_cases_app/services/network_cubit.dart';
 import 'package:current_cases_app/services/summary_model.dart';
-import 'package:current_cases_app/services/vaccine_cubit.dart';
 import 'package:current_cases_app/services/vaccine_model.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -25,22 +25,14 @@ class _VaxScreenState extends State<VaxScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<VaccineBloc>(
-      create: (context) => VaccineBloc()..add(LoadVaccineEvent()),
-      child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            _titleBar(),
-            _header(),
-            _vaxCharts(),
-            _barChart(),
-          ],
-        ),
-        // floatingActionButton: FloatingActionButton(
-        //   backgroundColor: Color(0xffe27d60),
-        //   onPressed: () => _selectDate(context),
-        //   child: const Icon(Icons.calendar_today_rounded),
-        // ),
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          _titleBar(),
+          _header(),
+          _vaxCharts(),
+          _barChart(),
+        ],
       ),
     );
   }
@@ -72,10 +64,6 @@ class _VaxScreenState extends State<VaxScreen> {
         padding: EdgeInsets.symmetric(horizontal: 15.0),
         decoration: BoxDecoration(
           color: Color(0xffe27d60),
-          // borderRadius: BorderRadius.only(
-          //   bottomLeft: Radius.circular(25.0),
-          //   bottomRight: Radius.circular(25.0),
-          // ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,58 +140,58 @@ class _VaxScreenState extends State<VaxScreen> {
       child: Column(
         children: [
           FutureBuilder(
-              future: DataService().getVaccineList(_province), // async work
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  default:
-                    if (snapshot.hasError)
-                      return Text('Error: ${snapshot.error}');
-                    else {
-                      List<Vaccine> data = snapshot.data;
-                      var df = new DateFormat('dd-MM-yyyy');
+            future: DataService().getVaccineList(_province), // async work
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                default:
+                  if (snapshot.hasError)
+                    return Text('Error: ${snapshot.error}');
+                  else {
+                    List<Vaccine> data = snapshot.data;
+                    var df = new DateFormat('dd-MM-yyyy');
 
-                      List<charts.Series<Vaccine, DateTime>>
-                          _createSampleData() {
-                        return [
-                          charts.Series(
-                              id: "Vaccinations",
-                              data: data,
-                              domainFn: (Vaccine vax, _) =>
-                                  df.parse(vax.dateVaccineAdministered),
-                              measureFn: (Vaccine vax, _) => vax.avaccine),
-                        ];
-                      }
-
-                      return Container(
-                        padding: EdgeInsets.all(10.0),
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 100.0,
-                            ),
-                            Text(
-                              "Vaccinations Per Day",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12.0,
-                                fontFamily: 'Futura',
-                              ),
-                            ),
-                            Container(
-                              height: 400.0,
-                              child: charts.TimeSeriesChart(_createSampleData(),
-                                  animate: true),
-                            )
-                          ],
-                        ),
-                      );
+                    List<charts.Series<Vaccine, DateTime>> _createSampleData() {
+                      return [
+                        charts.Series(
+                            id: "Vaccinations",
+                            data: data,
+                            domainFn: (Vaccine vax, _) =>
+                                df.parse(vax.dateVaccineAdministered),
+                            measureFn: (Vaccine vax, _) => vax.avaccine),
+                      ];
                     }
-                }
-              }),
+
+                    return Container(
+                      padding: EdgeInsets.all(10.0),
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 100.0,
+                          ),
+                          Text(
+                            "Vaccinations Per Day",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontFamily: 'Futura',
+                            ),
+                          ),
+                          Container(
+                            height: 400.0,
+                            child: charts.TimeSeriesChart(_createSampleData(),
+                                animate: true),
+                          )
+                        ],
+                      ),
+                    );
+                  }
+              }
+            },
+          ),
         ],
       ),
     );
@@ -212,19 +200,19 @@ class _VaxScreenState extends State<VaxScreen> {
   //pie chart
   SliverToBoxAdapter _vaxCharts() {
     return SliverToBoxAdapter(
-      child: BlocBuilder<VaccineBloc, VaccineState>(builder: (context, state) {
-        if (state is LoadingVaccineEvent) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (state is LoadedVaccineEvent) {
-          double percentage =
-              double.parse(state.vaccine.totalIndividualsAtLeastOne) / 13034844;
+      child: BlocBuilder<NetworkBloc, NetworkState>(
+        builder: (context, state) {
+          BlocProvider.of<NetworkBloc>(context).add(GetVaccineEvent());
+          if (state is LoadingNetworkState) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is LoadedNetworkState) {
+            double percentage =
+                double.parse(state.apiResponse.totalIndividualsAtLeastOne) /
+                    13034844;
 
-          return RefreshIndicator(
-            onRefresh: () async =>
-                BlocProvider.of<VaccineBloc>(context).add(PullToRefreshEvent()),
-            child: Container(
+            return Container(
               padding: EdgeInsets.all(15.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -238,7 +226,7 @@ class _VaxScreenState extends State<VaxScreen> {
                       fontFamily: 'Futura',
                     ),
                   ),
-                  Text(state.vaccine.toJson().toString()),
+                  Text(state.apiResponse.toJson().toString()),
                   Padding(
                     padding: EdgeInsets.all(15.0),
                     child: new LinearPercentIndicator(
@@ -254,21 +242,14 @@ class _VaxScreenState extends State<VaxScreen> {
                   ),
                 ],
               ),
-            ),
-          );
-        } else if (state is FailedVaccineEvent) {
-          return Text(state.error.toString());
-        } else {
-          return Container();
-        }
-      }),
+            );
+          } else if (state is FailedNetworkEvent) {
+            return Text(state.error.toString());
+          } else {
+            return Container();
+          }
+        },
+      ),
     );
   }
-}
-
-class Vax {
-  final int pop;
-  final String label;
-
-  Vax(this.pop, this.label);
 }
