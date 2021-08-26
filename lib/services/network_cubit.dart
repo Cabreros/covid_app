@@ -47,10 +47,10 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
 
     try {
       if (event is GetCaseEvent) {
-        final data = await _dataService.getCaseData();
+        var data = await _dataService.getCaseData();
         yield LoadedNetworkState(apiResponse: data);
       } else if (event is GetVaccineEvent) {
-        final data = await _dataService.getVaccinationData();
+        var data = await _dataService.getVaccinationData();
         yield LoadedNetworkState(apiResponse: data);
       }
     } catch (e) {

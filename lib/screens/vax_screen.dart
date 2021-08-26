@@ -203,15 +203,12 @@ class _VaxScreenState extends State<VaxScreen> {
       child: BlocBuilder<NetworkBloc, NetworkState>(
         builder: (context, state) {
           BlocProvider.of<NetworkBloc>(context).add(GetVaccineEvent());
+
           if (state is LoadingNetworkState) {
             return Center(
               child: CircularProgressIndicator(),
             );
           } else if (state is LoadedNetworkState) {
-            double percentage =
-                double.parse(state.apiResponse.totalIndividualsAtLeastOne) /
-                    13034844;
-
             return Container(
               padding: EdgeInsets.all(15.0),
               child: Column(
@@ -234,8 +231,8 @@ class _VaxScreenState extends State<VaxScreen> {
                       animation: true,
                       lineHeight: 20.0,
                       animationDuration: 2500,
-                      percent: percentage,
-                      center: Text((percentage * 100).toStringAsFixed(2) + '%'),
+                      percent: 0.1,
+                      center: Text((0.1 * 100).toStringAsFixed(2) + '%'),
                       linearStrokeCap: LinearStrokeCap.roundAll,
                       progressColor: Colors.green,
                     ),

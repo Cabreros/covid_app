@@ -1,11 +1,12 @@
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/services/health_region_data.dart'
     as healthRegionData;
-import 'package:current_cases_app/services/ontario_service.dart';
+import 'package:current_cases_app/services/network_cubit.dart';
 import 'package:current_cases_app/services/reopening_data.dart';
 import 'package:current_cases_app/services/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -30,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _appBar(),
           _header(),
           _bodyStats(_province),
-          _newApiTest(selectedDate),
+          _newApiTest(),
           _reopeningPages()
         ],
       ),
@@ -238,31 +239,41 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  SliverToBoxAdapter _newApiTest(date) {
+  SliverToBoxAdapter _newApiTest() {
     return SliverToBoxAdapter(
-      child: Column(
-        children: [
-          FutureBuilder(
-            future: OntarioService().getCaseData(), // async work
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                default:
-                  if (snapshot.hasError)
-                    return Text('Error: ${snapshot.error}');
-                  else {
-                    return Container(
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(snapshot.data.toString()),
-                    );
-                  }
-              }
-            },
-          ),
-        ],
+      child: BlocBuilder<NetworkBloc, NetworkState>(
+        builder: (context, state) {
+          BlocProvider.of<NetworkBloc>(context).add(GetCaseEvent());
+
+          if (state is LoadingNetworkState) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is LoadedNetworkState) {
+            return Container(
+              padding: EdgeInsets.all(15.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Current Vaccinations By The Numbers',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12.0,
+                      fontFamily: 'Futura',
+                    ),
+                  ),
+                  Text(state.apiResponse.toJson().toString()),
+                ],
+              ),
+            );
+          } else if (state is FailedNetworkEvent) {
+            return Text(state.error.toString());
+          } else {
+            return Container();
+          }
+        },
       ),
     );
   }
