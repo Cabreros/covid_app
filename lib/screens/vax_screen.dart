@@ -1,14 +1,14 @@
+import 'package:current_cases_app/providers/vaccine_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
-import 'package:current_cases_app/services/network_cubit.dart';
-import 'package:current_cases_app/services/summary_model.dart';
-import 'package:current_cases_app/services/vaccine_model.dart';
+import 'package:current_cases_app/models/summary_model.dart';
+import 'package:current_cases_app/models/vaccine_model.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:current_cases_app/services/health_region_data.dart'
+import 'package:current_cases_app/data/health_region_data.dart'
     as healthRegionData;
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class VaxScreen extends StatefulWidget {
   @override
@@ -200,51 +200,50 @@ class _VaxScreenState extends State<VaxScreen> {
   //pie chart
   SliverToBoxAdapter _vaxCharts() {
     return SliverToBoxAdapter(
-      child: BlocBuilder<NetworkBloc, NetworkState>(
-        builder: (context, state) {
-          BlocProvider.of<NetworkBloc>(context).add(GetVaccineEvent());
+      // child: BlocBuilder<NetworkBloc, NetworkState>(
+      //   builder: (context, state) {
+      //     BlocProvider.of<NetworkBloc>(context).add(GetVaccineEvent());
 
-          if (state is LoadingNetworkState) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (state is LoadedNetworkState) {
-            return Container(
-              padding: EdgeInsets.all(15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Current Vaccinations By The Numbers',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12.0,
-                      fontFamily: 'Futura',
-                    ),
+      //     if (state is LoadingNetworkState) {
+      //       return Center(
+      //         child: CircularProgressIndicator(),
+      //       );
+      //     } else if (state is LoadedNetworkState) {
+      child: Consumer<VaccineProvider>(
+        builder: (context, vaccine, child) {
+          vaccine.getNewVaccineData();
+          return Container(
+            padding: EdgeInsets.all(15.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Current Vaccinations By The Numbers',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12.0,
+                    fontFamily: 'Futura',
                   ),
-                  Text(state.apiResponse.toJson().toString()),
-                  Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: new LinearPercentIndicator(
-                      width: MediaQuery.of(context).size.width - 75,
-                      animation: true,
-                      lineHeight: 20.0,
-                      animationDuration: 2500,
-                      percent: 0.1,
-                      center: Text((0.1 * 100).toStringAsFixed(2) + '%'),
-                      linearStrokeCap: LinearStrokeCap.roundAll,
-                      progressColor: Colors.green,
-                    ),
+                ),
+                Text(child.toString()),
+                Text(vaccine.newvax.reportDate.toString()),
+                Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: new LinearPercentIndicator(
+                    width: MediaQuery.of(context).size.width - 75,
+                    animation: true,
+                    lineHeight: 20.0,
+                    animationDuration: 2500,
+                    percent: 0.1,
+                    center: Text((0.1 * 100).toStringAsFixed(2) + '%'),
+                    linearStrokeCap: LinearStrokeCap.roundAll,
+                    progressColor: Colors.green,
                   ),
-                ],
-              ),
-            );
-          } else if (state is FailedNetworkEvent) {
-            return Text(state.error.toString());
-          } else {
-            return Container();
-          }
+                ),
+              ],
+            ),
+          );
         },
       ),
     );

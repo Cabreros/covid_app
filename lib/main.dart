@@ -1,10 +1,17 @@
+import 'package:current_cases_app/providers/vaccine_provider.dart';
 import 'package:current_cases_app/screens/bottom_nav_screen.dart';
-import 'package:current_cases_app/services/network_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => VaccineProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,10 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Futura',
       ),
-      home: BlocProvider<NetworkBloc>(
-        create: (context) => NetworkBloc()..add(LoadNetworkEvent()),
-        child: BottomNavScreen(),
-      ),
+      home: BottomNavScreen(),
     );
   }
 }

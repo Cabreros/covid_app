@@ -1,8 +1,8 @@
-import 'package:current_cases_app/services/case_model.dart';
+import 'package:current_cases_app/models/case_model.dart';
 import 'package:current_cases_app/services/ontario_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'new_vaccine_model.dart';
+import '../models/new_vaccine_model.dart';
 
 abstract class NetworkEvent {}
 
