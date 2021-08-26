@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:current_cases_app/services/case_model.dart';
-import 'package:current_cases_app/services/new_vaccine_model.dart';
+import 'package:current_cases_app/models/case_model.dart';
+import 'package:current_cases_app/models/new_vaccine_model.dart';
 import 'package:http/http.dart' as http;
 
 class OntarioService {

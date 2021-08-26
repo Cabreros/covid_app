@@ -1,8 +1,8 @@
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
-import 'package:current_cases_app/services/health_region_data.dart'
+import 'package:current_cases_app/data/health_region_data.dart'
     as healthRegionData;
-import 'package:current_cases_app/services/health_region_model.dart';
+import 'package:current_cases_app/models/health_region_model.dart';
 import 'package:flutter/material.dart';
 
 class StatsScreen extends StatefulWidget {

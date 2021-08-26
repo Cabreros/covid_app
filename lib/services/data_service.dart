@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:current_cases_app/services/summary_model.dart';
-import 'package:current_cases_app/services/vaccine_model.dart';
+import 'package:current_cases_app/models/summary_model.dart';
+import 'package:current_cases_app/models/vaccine_model.dart';
 import 'package:http/http.dart' as http;
 
-import 'health_region_model.dart';
+import '../models/health_region_model.dart';
 
 class DataService {
   Future<List<Summary>> getSummary() async {

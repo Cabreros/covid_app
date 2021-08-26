@@ -1,4 +1,4 @@
-import 'package:current_cases_app/services/new_vaccine_model.dart';
+import 'package:current_cases_app/models/new_vaccine_model.dart';
 import 'package:current_cases_app/services/ontario_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
