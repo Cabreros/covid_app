@@ -106,7 +106,7 @@ class OntarioService {
     }
   }
 
-  Future<dynamic> getOntarioData(headers, type) async {
+  Future<CaseData> getOntarioData() async {
     Map<String, String> requestHeaders;
 
     requestHeaders = {
@@ -122,7 +122,7 @@ class OntarioService {
     try {
       var body = jsonDecode(response.body)['result']['records'][0];
 
-      return type.fromJson(body);
+      return CaseData.fromJson(body);
     } catch (e) {
       return e;
     }

@@ -212,38 +212,45 @@ class _VaxScreenState extends State<VaxScreen> {
       child: Consumer<VaccineProvider>(
         builder: (context, vaccine, child) {
           vaccine.getNewVaccineData();
-          return Container(
-            padding: EdgeInsets.all(15.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Current Vaccinations By The Numbers',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12.0,
-                    fontFamily: 'Futura',
+
+          if (vaccine == null) {
+            return Container(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return Container(
+              padding: EdgeInsets.all(15.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Current Vaccinations By The Numbers',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12.0,
+                      fontFamily: 'Futura',
+                    ),
                   ),
-                ),
-                Text(child.toString()),
-                Text(vaccine.newvax.reportDate.toString()),
-                Padding(
-                  padding: EdgeInsets.all(15.0),
-                  child: new LinearPercentIndicator(
-                    width: MediaQuery.of(context).size.width - 75,
-                    animation: true,
-                    lineHeight: 20.0,
-                    animationDuration: 2500,
-                    percent: 0.1,
-                    center: Text((0.1 * 100).toStringAsFixed(2) + '%'),
-                    linearStrokeCap: LinearStrokeCap.roundAll,
-                    progressColor: Colors.green,
+                  Text(child.toString()),
+                  Text(vaccine.newvax.toJson().toString()),
+                  Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: new LinearPercentIndicator(
+                      width: MediaQuery.of(context).size.width - 75,
+                      animation: true,
+                      lineHeight: 20.0,
+                      animationDuration: 2500,
+                      percent: 0.1,
+                      center: Text((0.1 * 100).toStringAsFixed(2) + '%'),
+                      linearStrokeCap: LinearStrokeCap.roundAll,
+                      progressColor: Colors.green,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
+                ],
+              ),
+            );
+          }
         },
       ),
     );

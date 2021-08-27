@@ -1,3 +1,5 @@
+import 'package:current_cases_app/models/case_model.dart';
+import 'package:current_cases_app/providers/case_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/data/health_region_data.dart'
     as healthRegionData;
@@ -7,6 +9,7 @@ import 'package:current_cases_app/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -240,7 +243,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   SliverToBoxAdapter _newApiTest() {
     return SliverToBoxAdapter(
-      child: Container(),
+      child: Consumer<CaseProvider>(builder: (context, cases, child) {
+        cases.getCaseData();
+        return Container(
+          child: Text(cases.caseData.toJson().toString()),
+        );
+      }),
     );
   }
 
