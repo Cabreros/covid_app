@@ -1,5 +1,8 @@
 import 'package:current_cases_app/models/case_model.dart';
+import 'package:current_cases_app/models/status_model.dart';
 import 'package:current_cases_app/providers/case_provider.dart';
+import 'package:current_cases_app/providers/hospital_provider.dart';
+import 'package:current_cases_app/providers/status_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/data/health_region_data.dart'
     as healthRegionData;
@@ -33,7 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _appBar(),
           _header(),
           _bodyStats(_province),
-          _newApiTest(),
+          // _newApiTest(),
+          // _hospitalTest(),
+          // _statusTest(),
           _reopeningPages()
         ],
       ),
@@ -141,6 +146,83 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   SliverToBoxAdapter _bodyStats(province) {
+    Widget dailySummary;
+    if (province == 'ON') {
+      dailySummary = Consumer<StatusProvider>(
+        builder: (context, status, child) {
+          return Consumer<CaseProvider>(
+            builder: (context, cases, child) {
+              status.getStatusData();
+              cases.getCaseData();
+              CaseData caseStats = cases.caseData;
+              Status currentStatus = status.statusData;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: Color(0xff7eca9c),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'There are ${caseStats.total} new cases in Ontario.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24.0,
+                            fontFamily: 'Futura',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      StatsCard(
+                        label: 'Active',
+                        stat: currentStatus.confirmedPositive.toString(),
+                        color: Color(0xffc38d9e),
+                      ),
+                      StatsCard(
+                        label: 'Recovered',
+                        stat: currentStatus.resolved.toString(),
+                        color: Color(0xff9ad9db),
+                      ),
+                      StatsCard(
+                        label: 'Deaths',
+                        stat: currentStatus.deaths.toString(),
+                        color: Color(0xffd44000),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      StatsCard(
+                        label: 'Total Cases',
+                        stat: currentStatus.totalCases.toString(),
+                      ),
+                      StatsCard(
+                        label: 'Total Deaths',
+                        stat: currentStatus.deaths.toString(),
+                        color: Color(0xffe8a87c),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    } else {
+      dailySummary = otherProvince(province);
+    }
     return SliverToBoxAdapter(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 15.0),
@@ -151,93 +233,97 @@ class _HomeScreenState extends State<HomeScreen> {
             bottomRight: Radius.circular(25.0),
           ),
         ),
-        child: FutureBuilder(
-          future: DataService()
-              .getProvinceSummary(province, selectedDate), // async work
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Column(
-                  children: [
-                    SizedBox(
-                      height: 40,
+        child: dailySummary,
+      ),
+    );
+  }
+
+  FutureBuilder<Summary> otherProvince(province) {
+    return FutureBuilder(
+      future: DataService()
+          .getProvinceSummary(province, selectedDate), // async work
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return Column(
+              children: [
+                SizedBox(
+                  height: 40,
+                ),
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 40,
+                )
+              ],
+            );
+          default:
+            if (snapshot.hasError)
+              return Text('Error: ${snapshot.error}');
+            else {
+              var summary = snapshot.data;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: Color(0xff7eca9c),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    CircularProgressIndicator(),
-                    SizedBox(
-                      height: 40,
-                    )
-                  ],
-                );
-              default:
-                if (snapshot.hasError)
-                  return Text('Error: ${snapshot.error}');
-                else {
-                  var summary = snapshot.data;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'There are ${summary.cases} new cases in ${summary.province}.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24.0,
+                            fontFamily: 'Futura',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Row(
                     children: [
-                      Container(
-                        margin: EdgeInsets.all(8.0),
-                        padding: EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          color: Color(0xff7eca9c),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 6.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              'There are ${summary.cases} new cases in ${summary.province}.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                                fontFamily: 'Futura',
-                              ),
-                            ),
-                          ),
-                        ),
+                      StatsCard(
+                        label: 'Active',
+                        stat: summary.activeCases.toInt().toString(),
+                        color: Color(0xffc38d9e),
                       ),
-                      Row(
-                        children: [
-                          StatsCard(
-                            label: 'Active',
-                            stat: summary.activeCases.toInt().toString(),
-                            color: Color(0xffc38d9e),
-                          ),
-                          StatsCard(
-                            label: 'Recovered',
-                            stat: summary.culRecovered.toInt().toString(),
-                            color: Color(0xff9ad9db),
-                          ),
-                          StatsCard(
-                            label: 'Deaths',
-                            stat: summary.deaths.toInt().toString(),
-                            color: Color(0xffd44000),
-                          ),
-                        ],
+                      StatsCard(
+                        label: 'Recovered',
+                        stat: summary.culRecovered.toInt().toString(),
+                        color: Color(0xff9ad9db),
                       ),
-                      Row(
-                        children: [
-                          StatsCard(
-                            label: 'Total Cases',
-                            stat: summary.culCases.toInt().toString(),
-                          ),
-                          StatsCard(
-                            label: 'Total Deaths',
-                            stat: summary.culDeaths.toInt().toString(),
-                            color: Color(0xffe8a87c),
-                          ),
-                        ],
+                      StatsCard(
+                        label: 'Deaths',
+                        stat: summary.deaths.toInt().toString(),
+                        color: Color(0xffd44000),
                       ),
                     ],
-                  );
-                }
+                  ),
+                  Row(
+                    children: [
+                      StatsCard(
+                        label: 'Total Cases',
+                        stat: summary.culCases.toInt().toString(),
+                      ),
+                      StatsCard(
+                        label: 'Total Deaths',
+                        stat: summary.culDeaths.toInt().toString(),
+                        color: Color(0xffe8a87c),
+                      ),
+                    ],
+                  ),
+                ],
+              );
             }
-          },
-        ),
-      ),
+        }
+      },
     );
   }
 
@@ -249,6 +335,40 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text(cases.caseData.toJson().toString()),
         );
       }),
+    );
+  }
+
+  SliverToBoxAdapter _hospitalTest() {
+    return SliverToBoxAdapter(
+      child: Consumer<HospitalProvider>(
+        builder: (context, cases, child) {
+          cases.getHospitalData();
+          return Container(
+            child: Text(cases.hospital.toJson().toString()),
+          );
+        },
+      ),
+    );
+  }
+
+  SliverToBoxAdapter _statusTest() {
+    return SliverToBoxAdapter(
+      child: Consumer<StatusProvider>(
+        builder: (context, status, child) {
+          return Consumer<HospitalProvider>(
+            builder: (context, hospital, child) {
+              status.getStatusData();
+              hospital.getHospitalData();
+              return Column(
+                children: [
+                  Text(status.statusData.toJson().toString()),
+                  Text(hospital.hospital.toJson().toString()),
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
 

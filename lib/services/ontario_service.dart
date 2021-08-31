@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:current_cases_app/models/case_model.dart';
+import 'package:current_cases_app/models/hospital_model.dart';
 import 'package:current_cases_app/models/new_vaccine_model.dart';
+import 'package:current_cases_app/models/status_model.dart';
 import 'package:http/http.dart' as http;
 
 class OntarioService {
@@ -106,6 +108,28 @@ class OntarioService {
     }
   }
 
+  Future<Status> getStatusData() async {
+    Map<String, String> requestHeaders;
+
+    requestHeaders = {
+      'resource_id': 'ed270bb8-340b-41f9-a7c6-e8ef587e6d11',
+      'limit': '5',
+      'sort': '_id desc'
+    };
+
+    final uri = Uri.https(
+        'data.ontario.ca', '/api/3/action/datastore_search', requestHeaders);
+    final response = await http.get(uri);
+
+    try {
+      var body = jsonDecode(response.body)['result']['records'][0];
+
+      return Status.fromJson(body);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<CaseData> getOntarioData() async {
     Map<String, String> requestHeaders;
 
@@ -123,6 +147,28 @@ class OntarioService {
       var body = jsonDecode(response.body)['result']['records'][0];
 
       return CaseData.fromJson(body);
+    } catch (e) {
+      return e;
+    }
+  }
+
+  Future<Hospital> getHospitalData() async {
+    Map<String, String> requestHeaders;
+
+    requestHeaders = {
+      'resource_id': '274b819c-5d69-4539-a4db-f2950794138c',
+      'limit': '5',
+      'sort': '_id desc'
+    };
+
+    final uri = Uri.https(
+        'data.ontario.ca', '/api/3/action/datastore_search', requestHeaders);
+    final response = await http.get(uri);
+
+    try {
+      var body = jsonDecode(response.body)['result']['records'][0];
+
+      return Hospital.fromJson(body);
     } catch (e) {
       return e;
     }
