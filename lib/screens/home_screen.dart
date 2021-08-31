@@ -148,75 +148,71 @@ class _HomeScreenState extends State<HomeScreen> {
   SliverToBoxAdapter _bodyStats(province) {
     Widget dailySummary;
     if (province == 'ON') {
-      dailySummary = Consumer<StatusProvider>(
-        builder: (context, status, child) {
-          return Consumer<CaseProvider>(
-            builder: (context, cases, child) {
-              status.getStatusData();
-              cases.getCaseData();
-              CaseData caseStats = cases.caseData;
-              Status currentStatus = status.statusData;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      dailySummary = Consumer2<StatusProvider, CaseProvider>(
+        builder: (context, status, cases, child) {
+          status.getStatusData();
+          cases.getCaseData();
+          CaseData caseStats = cases.caseData;
+          Status currentStatus = status.statusData;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  color: Color(0xff7eca9c),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'There are ${caseStats.total} new cases in Ontario.',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24.0,
+                        fontFamily: 'Futura',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Row(
                 children: [
-                  Container(
-                    margin: EdgeInsets.all(8.0),
-                    padding: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: Color(0xff7eca9c),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'There are ${caseStats.total} new cases in Ontario.',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24.0,
-                            fontFamily: 'Futura',
-                          ),
-                        ),
-                      ),
-                    ),
+                  StatsCard(
+                    label: 'Active',
+                    stat: currentStatus.confirmedPositive.toString(),
+                    color: Color(0xffc38d9e),
                   ),
-                  Row(
-                    children: [
-                      StatsCard(
-                        label: 'Active',
-                        stat: currentStatus.confirmedPositive.toString(),
-                        color: Color(0xffc38d9e),
-                      ),
-                      StatsCard(
-                        label: 'Recovered',
-                        stat: currentStatus.resolved.toString(),
-                        color: Color(0xff9ad9db),
-                      ),
-                      StatsCard(
-                        label: 'Deaths',
-                        stat: currentStatus.deaths.toString(),
-                        color: Color(0xffd44000),
-                      ),
-                    ],
+                  StatsCard(
+                    label: 'Recovered',
+                    stat: currentStatus.resolved.toString(),
+                    color: Color(0xff9ad9db),
                   ),
-                  Row(
-                    children: [
-                      StatsCard(
-                        label: 'Total Cases',
-                        stat: currentStatus.totalCases.toString(),
-                      ),
-                      StatsCard(
-                        label: 'Total Deaths',
-                        stat: currentStatus.deaths.toString(),
-                        color: Color(0xffe8a87c),
-                      ),
-                    ],
+                  StatsCard(
+                    label: 'Deaths',
+                    stat: currentStatus.deaths.toString(),
+                    color: Color(0xffd44000),
                   ),
                 ],
-              );
-            },
+              ),
+              Row(
+                children: [
+                  StatsCard(
+                    label: 'Total Cases',
+                    stat: currentStatus.totalCases.toString(),
+                  ),
+                  StatsCard(
+                    label: 'Total Deaths',
+                    stat: currentStatus.deaths.toString(),
+                    color: Color(0xffe8a87c),
+                  ),
+                ],
+              ),
+            ],
           );
         },
       );

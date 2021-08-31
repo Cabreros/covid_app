@@ -2,6 +2,7 @@ import 'package:current_cases_app/providers/vaccine_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/models/summary_model.dart';
 import 'package:current_cases_app/models/vaccine_model.dart';
+import 'package:current_cases_app/widgets/vaxx_card.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:intl/intl.dart';
@@ -30,6 +31,7 @@ class _VaxScreenState extends State<VaxScreen> {
         slivers: [
           _titleBar(),
           _header(),
+          _vaxCard(),
           _vaxCharts(),
           _barChart(),
         ],
@@ -81,49 +83,49 @@ class _VaxScreenState extends State<VaxScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _province,
-                      items: _provinces
-                          .map(
-                            (e) => DropdownMenuItem(
-                              child: Row(
-                                children: <Widget>[
-                                  Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10.0),
-                                    height: 40.0,
-                                    width: 40.0,
-                                    child: Image.asset(
-                                      'assets/images/$e.jpg',
-                                    ),
-                                  ),
-                                  Text(
-                                    e,
-                                    style: TextStyle(
-                                        fontFamily: 'Futura', fontSize: 15),
-                                  ),
-                                ],
-                              ),
-                              value: e,
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (String value) {
-                        setState(() {
-                          _province = value;
-                          futSummary = DataService()
-                              .getProvinceSummary(value, selectedDate);
-                        });
-                      },
-                    ),
-                  ),
-                ),
+                // Container(
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(20),
+                //   ),
+                //   child: DropdownButtonHideUnderline(
+                //     child: DropdownButton<String>(
+                //       value: _province,
+                //       items: _provinces
+                //           .map(
+                //             (e) => DropdownMenuItem(
+                //               child: Row(
+                //                 children: <Widget>[
+                //                   Container(
+                //                     padding:
+                //                         EdgeInsets.symmetric(horizontal: 10.0),
+                //                     height: 40.0,
+                //                     width: 40.0,
+                //                     child: Image.asset(
+                //                       'assets/images/$e.jpg',
+                //                     ),
+                //                   ),
+                //                   Text(
+                //                     e,
+                //                     style: TextStyle(
+                //                         fontFamily: 'Futura', fontSize: 15),
+                //                   ),
+                //                 ],
+                //               ),
+                //               value: e,
+                //             ),
+                //           )
+                //           .toList(),
+                //       onChanged: (String value) {
+                //         setState(() {
+                //           _province = value;
+                //           futSummary = DataService()
+                //               .getProvinceSummary(value, selectedDate);
+                //         });
+                //       },
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             SizedBox(
@@ -200,15 +202,6 @@ class _VaxScreenState extends State<VaxScreen> {
   //pie chart
   SliverToBoxAdapter _vaxCharts() {
     return SliverToBoxAdapter(
-      // child: BlocBuilder<NetworkBloc, NetworkState>(
-      //   builder: (context, state) {
-      //     BlocProvider.of<NetworkBloc>(context).add(GetVaccineEvent());
-
-      //     if (state is LoadingNetworkState) {
-      //       return Center(
-      //         child: CircularProgressIndicator(),
-      //       );
-      //     } else if (state is LoadedNetworkState) {
       child: Consumer<VaccineProvider>(
         builder: (context, vaccine, child) {
           vaccine.getNewVaccineData();
@@ -218,6 +211,8 @@ class _VaxScreenState extends State<VaxScreen> {
               child: CircularProgressIndicator(),
             );
           } else {
+            dynamic totalPop18Plus = 12083325;
+            dynamic totalPop12Plus = 13034844;
             return Container(
               padding: EdgeInsets.all(15.0),
               child: Column(
@@ -240,7 +235,7 @@ class _VaxScreenState extends State<VaxScreen> {
                       width: MediaQuery.of(context).size.width - 75,
                       animation: true,
                       lineHeight: 20.0,
-                      animationDuration: 2500,
+                      animationDuration: 1000,
                       percent: 0.1,
                       center: Text((0.1 * 100).toStringAsFixed(2) + '%'),
                       linearStrokeCap: LinearStrokeCap.roundAll,
@@ -249,6 +244,37 @@ class _VaxScreenState extends State<VaxScreen> {
                   ),
                 ],
               ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  SliverToBoxAdapter _vaxCard() {
+    return SliverToBoxAdapter(
+      child: Consumer<VaccineProvider>(
+        builder: (context, vaccine, child) {
+          if (vaccine == null) {
+            return Container(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            dynamic totalPop18Plus = 12083325;
+            dynamic totalPop12Plus = 13034844;
+            return Column(
+              children: [
+                VaxxCard(
+                  label: 'total at least one',
+                  stat: 'total at least one',
+                  percentage: 10815120 / totalPop12Plus,
+                ),
+                VaxxCard(
+                  label: 'total double',
+                  stat: 'total double',
+                  percentage: 9942834 / totalPop12Plus,
+                ),
+              ],
             );
           }
         },
