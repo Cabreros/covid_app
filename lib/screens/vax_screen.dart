@@ -273,13 +273,15 @@ class _VaxScreenState extends State<VaxScreen> {
                   label: 'total at least one',
                   stat: 'total at least one',
                   percentage: 10815120 / totalPop12Plus,
+                  animationTime: (10815120 * 1000 ~/ totalPop12Plus),
                 ),
                 VaxxCard(
                   label: 'total double',
                   stat: 'total double',
                   percentage: 9942834 / totalPop12Plus,
+                  animationTime: (9942834 * 1000 ~/ totalPop12Plus),
                 ),
-                Text(map['Ontario_12plus'])
+                Text(group.vaxGroup['80+'].toJson().toString())
               ],
             );
           }

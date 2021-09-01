@@ -6,10 +6,12 @@ class VaxxCard extends StatelessWidget {
   final String stat;
   final Color color;
   final double percentage;
+  final int animationTime;
   const VaxxCard({
     @required this.label,
     @required this.stat,
     @required this.percentage,
+    this.animationTime: 1000,
     this.color: const Color(0xff41b3a3),
     Key key,
   }) : super(key: key);
@@ -49,7 +51,7 @@ class VaxxCard extends StatelessWidget {
             child: LinearPercentIndicator(
               animation: true,
               lineHeight: 20.0,
-              animationDuration: 1000,
+              animationDuration: animationTime,
               percent: percentage,
               center: Text((percentage * 100).toStringAsFixed(2) + '%'),
               linearStrokeCap: LinearStrokeCap.roundAll,
