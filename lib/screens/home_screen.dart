@@ -374,6 +374,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return SliverToBoxAdapter(
       child: Column(
         children: [
+          SizedBox(
+            height: 10.0,
+          ),
           Container(
             height: 200,
             child: PageView.builder(

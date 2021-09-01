@@ -3,6 +3,7 @@ import 'package:current_cases_app/models/case_model.dart';
 import 'package:current_cases_app/models/hospital_model.dart';
 import 'package:current_cases_app/models/new_vaccine_model.dart';
 import 'package:current_cases_app/models/status_model.dart';
+import 'package:current_cases_app/models/vaccine_group_model.dart';
 import 'package:http/http.dart' as http;
 
 class OntarioService {
@@ -169,6 +170,30 @@ class OntarioService {
       var body = jsonDecode(response.body)['result']['records'][0];
 
       return Hospital.fromJson(body);
+    } catch (e) {
+      return e;
+    }
+  }
+
+  Future<Map<dynamic, dynamic>> getVaccineGroupData() async {
+    Map<String, String> requestHeaders;
+
+    requestHeaders = {
+      'resource_id': '775ca815-5028-4e9b-9dd4-6975ff1be021',
+      'limit': '11',
+      'sort': '_id desc'
+    };
+
+    final uri = Uri.https(
+        'data.ontario.ca', '/api/3/action/datastore_search', requestHeaders);
+    final response = await http.get(uri);
+
+    try {
+      var body = jsonDecode(response.body)['result']['records'] as List;
+      // var allGroups = jsonDecode(body) as List;
+      var allGroupData =
+          Map.fromEntries(body.map((data) => MapEntry(data['Agegroup'], data)));
+      return allGroupData;
     } catch (e) {
       return e;
     }

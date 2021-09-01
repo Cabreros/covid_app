@@ -14,6 +14,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => CaseProvider()),
         ChangeNotifierProvider(create: (_) => HospitalProvider()),
         ChangeNotifierProvider(create: (_) => StatusProvider()),
+        ChangeNotifierProvider(create: (_) => VaccineGroupProvider()),
       ],
       child: MyApp(),
     ),

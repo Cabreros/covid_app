@@ -1,3 +1,4 @@
+import 'package:current_cases_app/models/vaccine_group_model.dart';
 import 'package:current_cases_app/providers/vaccine_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/models/summary_model.dart';
@@ -253,15 +254,19 @@ class _VaxScreenState extends State<VaxScreen> {
 
   SliverToBoxAdapter _vaxCard() {
     return SliverToBoxAdapter(
-      child: Consumer<VaccineProvider>(
-        builder: (context, vaccine, child) {
+      child: Consumer2<VaccineProvider, VaccineGroupProvider>(
+        builder: (context, vaccine, group, child) {
           if (vaccine == null) {
             return Container(
               child: CircularProgressIndicator(),
             );
           } else {
+            vaccine.getNewVaccineData();
+            group.getNewVaccineData();
+
             dynamic totalPop18Plus = 12083325;
             dynamic totalPop12Plus = 13034844;
+            dynamic map = group.vaxGroup;
             return Column(
               children: [
                 VaxxCard(
@@ -274,6 +279,7 @@ class _VaxScreenState extends State<VaxScreen> {
                   stat: 'total double',
                   percentage: 9942834 / totalPop12Plus,
                 ),
+                Text(map['Ontario_12plus'])
               ],
             );
           }
