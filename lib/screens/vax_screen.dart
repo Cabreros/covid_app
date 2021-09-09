@@ -264,31 +264,34 @@ class _VaxScreenState extends State<VaxScreen> {
           vaccine.getNewVaccineData();
           group.getNewVaccineData();
 
-          return (vaccine.isLoaded && group.isLoaded)
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Column(
-                  children: [
-                    VaxxCard(
-                      label: 'total at least one',
-                      stat: 'total at least one',
-                      percentage: 1 / totalPop12Plus,
-                      animationTime: (10815120 * 1000 ~/ totalPop12Plus),
-                      color: Color(0xffe8a87c),
-                    ),
-                    VaxxCard(
-                      label: 'total double',
-                      stat: 'total double',
-                      percentage: 9942834 / totalPop12Plus,
-                      animationTime: (9942834 * 1000 ~/ totalPop12Plus),
-                      color: Color(0xff9ad9db),
-                    ),
-                    Text(
-                      group.vaxGroup['80+'].toString(),
-                    ),
-                  ],
-                );
+          if (vaccine.isLoaded && group.isLoaded) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            VaccineGroup grou = group.vaxGroup['80+'];
+            return Column(
+              children: [
+                VaxxCard(
+                  label: 'total at least one',
+                  stat: grou?.date,
+                  percentage: grou?.percentAtLeastOneDose,
+                  animationTime: (10815120 * 1000 ~/ totalPop12Plus),
+                  color: Color(0xffe8a87c),
+                ),
+                VaxxCard(
+                  label: 'total double',
+                  stat: 'total double',
+                  percentage: 9942834 / totalPop12Plus,
+                  animationTime: (9942834 * 1000 ~/ totalPop12Plus),
+                  color: Color(0xff9ad9db),
+                ),
+                Text(
+                  group.vaxGroup['80+'].toString(),
+                ),
+              ],
+            );
+          }
         },
       ),
     );
