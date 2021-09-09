@@ -175,7 +175,7 @@ class OntarioService {
     }
   }
 
-  Future<Map<dynamic, VaccineGroup>> getVaccineGroupData() async {
+  Future<Map<String, VaccineGroup>> getVaccineGroupData() async {
     Map<String, String> requestHeaders;
 
     requestHeaders = {
@@ -191,7 +191,8 @@ class OntarioService {
     try {
       var body = jsonDecode(response.body)['result']['records'] as List;
       var map = Map.fromIterable(body,
-          key: (e) => e['Agegroup'], value: (e) => VaccineGroup.fromJson(e));
+          key: (e) => e['Agegroup'].toString(),
+          value: (e) => VaccineGroup.fromJson(e));
       // var allGroups = jsonDecode(body) as List;
       // var allGroupData =
       // Map.fromEntries(body.map((data) => MapEntry(data['Agegroup'], data)));

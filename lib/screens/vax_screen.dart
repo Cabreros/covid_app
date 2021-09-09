@@ -1,3 +1,4 @@
+import 'package:current_cases_app/models/new_vaccine_model.dart';
 import 'package:current_cases_app/models/vaccine_group_model.dart';
 import 'package:current_cases_app/providers/vaccine_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
@@ -256,35 +257,38 @@ class _VaxScreenState extends State<VaxScreen> {
     return SliverToBoxAdapter(
       child: Consumer2<VaccineProvider, VaccineGroupProvider>(
         builder: (context, vaccine, group, child) {
-          if (vaccine == null) {
-            return Container(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            vaccine.getNewVaccineData();
-            group.getNewVaccineData();
+          dynamic totalPop18Plus = 12083325;
+          dynamic totalPop12Plus = 13034844;
+          List groupings = group.vaxGroup.keys.toList();
 
-            dynamic totalPop18Plus = 12083325;
-            dynamic totalPop12Plus = 13034844;
-            dynamic map = group.vaxGroup;
-            return Column(
-              children: [
-                VaxxCard(
-                  label: 'total at least one',
-                  stat: 'total at least one',
-                  percentage: 10815120 / totalPop12Plus,
-                  animationTime: (10815120 * 1000 ~/ totalPop12Plus),
-                ),
-                VaxxCard(
-                  label: 'total double',
-                  stat: 'total double',
-                  percentage: 9942834 / totalPop12Plus,
-                  animationTime: (9942834 * 1000 ~/ totalPop12Plus),
-                ),
-                Text(group.vaxGroup['80+'].toJson().toString())
-              ],
-            );
-          }
+          vaccine.getNewVaccineData();
+          group.getNewVaccineData();
+
+          return (vaccine.isLoaded && group.isLoaded)
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Column(
+                  children: [
+                    VaxxCard(
+                      label: 'total at least one',
+                      stat: 'total at least one',
+                      percentage: 1 / totalPop12Plus,
+                      animationTime: (10815120 * 1000 ~/ totalPop12Plus),
+                      color: Color(0xffe8a87c),
+                    ),
+                    VaxxCard(
+                      label: 'total double',
+                      stat: 'total double',
+                      percentage: 9942834 / totalPop12Plus,
+                      animationTime: (9942834 * 1000 ~/ totalPop12Plus),
+                      color: Color(0xff9ad9db),
+                    ),
+                    Text(
+                      group.vaxGroup['80+'].toString(),
+                    ),
+                  ],
+                );
         },
       ),
     );

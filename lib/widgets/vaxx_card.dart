@@ -53,7 +53,10 @@ class VaxxCard extends StatelessWidget {
               lineHeight: 20.0,
               animationDuration: animationTime,
               percent: percentage,
-              center: Text((percentage * 100).toStringAsFixed(2) + '%'),
+              center: Text(
+                (percentage * 100).toStringAsFixed(2) + '%',
+                style: TextStyle(color: Colors.white),
+              ),
               linearStrokeCap: LinearStrokeCap.roundAll,
               progressColor: Colors.green,
             ),

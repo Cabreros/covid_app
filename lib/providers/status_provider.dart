@@ -13,4 +13,9 @@ class StatusProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  bool get isLoaded {
+    // that is a very simple check
+    return statusData == null;
+  }
 }
