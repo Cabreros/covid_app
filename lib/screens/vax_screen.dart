@@ -1,4 +1,3 @@
-import 'package:current_cases_app/models/new_vaccine_model.dart';
 import 'package:current_cases_app/models/vaccine_group_model.dart';
 import 'package:current_cases_app/providers/vaccine_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
@@ -25,6 +24,14 @@ class _VaxScreenState extends State<VaxScreen> {
       DataService().getProvinceSummary('MB', DateTime.now());
   var format = DateFormat.yMMMMd('en_US');
   String _province = 'ON';
+
+  @override
+  void initState() {
+    super.initState();
+    final vaccineGrpPro =
+        Provider.of<VaccineGroupProvider>(context, listen: false)
+            .getNewVaccineData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -261,37 +268,37 @@ class _VaxScreenState extends State<VaxScreen> {
           dynamic totalPop12Plus = 13034844;
           List groupings = group.vaxGroup.keys.toList();
 
-          vaccine.getNewVaccineData();
-          group.getNewVaccineData();
+          VaccineGroup grou = group.vaxGroup['80+'];
 
-          if (vaccine.isLoaded && group.isLoaded) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            VaccineGroup grou = group.vaxGroup['80+'];
-            return Column(
-              children: [
-                VaxxCard(
-                  label: 'total at least one',
-                  stat: grou?.date,
-                  percentage: grou?.percentAtLeastOneDose,
-                  animationTime: (10815120 * 1000 ~/ totalPop12Plus),
-                  color: Color(0xffe8a87c),
-                ),
-                VaxxCard(
-                  label: 'total double',
-                  stat: 'total double',
-                  percentage: 9942834 / totalPop12Plus,
-                  animationTime: (9942834 * 1000 ~/ totalPop12Plus),
-                  color: Color(0xff9ad9db),
-                ),
-                Text(
-                  group.vaxGroup['80+'].toString(),
-                ),
-              ],
-            );
-          }
+          return group.loading
+              ? Center(
+                  child: Container(
+                    height: 10,
+                    width: 10,
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : Column(
+                  children: [
+                    VaxxCard(
+                      label: 'total at least one',
+                      stat: grou.date,
+                      percentage: grou.percentAtLeastOneDose,
+                      animationTime: (1000),
+                      color: Color(0xffe8a87c),
+                    ),
+                    VaxxCard(
+                      label: 'total double',
+                      stat: 'total double',
+                      percentage: grou.percentFullyVaccinated,
+                      animationTime: (1000),
+                      color: Color(0xff9ad9db),
+                    ),
+                    Text(
+                      group.vaxGroup['80+']?.toJson().toString(),
+                    ),
+                  ],
+                );
         },
       ),
     );

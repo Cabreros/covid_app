@@ -6,7 +6,7 @@ class VaccineProvider extends ChangeNotifier {
   NewVaccine newvax = NewVaccine();
   bool loading = false;
 
-  getNewVaccineData() async {
+  Future getNewVaccineData() async {
     loading = true;
     newvax = await OntarioService().getVaccinationData();
     loading = false;
@@ -29,7 +29,7 @@ class VaccineGroupProvider extends ChangeNotifier {
   Map vaxGroup = Map();
   bool loading = false;
 
-  getNewVaccineData() async {
+  Future getNewVaccineData() async {
     loading = true;
     vaxGroup = await OntarioService().getVaccineGroupData();
     loading = false;
