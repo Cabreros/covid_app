@@ -37,15 +37,20 @@ class VaxxCard extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 10.0,
+            height: 5,
           ),
-          Text(
-            '$stat',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
-              fontFamily: 'Futura',
+          Center(
+            child: Text(
+              '$stat',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20.0,
+                fontFamily: 'Futura',
+              ),
             ),
+          ),
+          SizedBox(
+            height: 5,
           ),
           Center(
             child: LinearPercentIndicator(

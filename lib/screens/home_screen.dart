@@ -340,11 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SliverToBoxAdapter(
       child: Consumer2<VaccineProvider, VaccineGroupProvider>(
         builder: (context, vaccine, group, child) {
-          dynamic totalPop18Plus = 12083325;
-          dynamic totalPop12Plus = 13034844;
-          List groupings = group.vaxGroup.keys.toList();
-
-          VaccineGroup grou = group.vaxGroup['80+'];
+          VaccineGroup ont12Plus = group.vaxGroup['Ontario_12plus'];
 
           return group.loading && vaccine.loading
               ? Center(
@@ -356,22 +352,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               : Column(
                   children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'Vaccination Overview',
+                      style: TextStyle(fontSize: 17),
+                    ),
                     VaxxCard(
-                      label: 'total at least one',
-                      stat: grou.date,
-                      percentage: grou.percentAtLeastOneDose,
+                      label: 'At least one dose cumulative',
+                      stat: 'Ontario 12+',
+                      percentage: ont12Plus.percentAtLeastOneDose,
                       animationTime: (1000),
                       color: Color(0xffe8a87c),
                     ),
                     VaxxCard(
-                      label: 'total double',
-                      stat: 'total double',
-                      percentage: grou.percentFullyVaccinated,
+                      label: 'Fully vaccinated',
+                      stat: 'Ontario 12+',
+                      percentage: ont12Plus.percentFullyVaccinated,
                       animationTime: (1000),
                       color: Color(0xff9ad9db),
-                    ),
-                    Text(
-                      group.vaxGroup['80+']?.toJson().toString(),
                     ),
                   ],
                 );
