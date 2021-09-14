@@ -2,10 +2,8 @@ import 'package:current_cases_app/models/vaccine_group_model.dart';
 import 'package:current_cases_app/providers/vaccine_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/models/summary_model.dart';
-import 'package:current_cases_app/models/vaccine_model.dart';
 import 'package:current_cases_app/widgets/vaxx_card.dart';
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:intl/intl.dart';
 import 'package:current_cases_app/data/health_region_data.dart'
     as healthRegionData;
@@ -28,9 +26,10 @@ class _VaxScreenState extends State<VaxScreen> {
   @override
   void initState() {
     super.initState();
-    final vaccineGrpPro =
-        Provider.of<VaccineGroupProvider>(context, listen: false)
-            .getNewVaccineData();
+
+    Provider.of<VaccineGroupProvider>(context, listen: false)
+        .getNewVaccineData();
+    Provider.of<VaccineProvider>(context, listen: false).getNewVaccineData();
   }
 
   @override
@@ -42,7 +41,7 @@ class _VaxScreenState extends State<VaxScreen> {
           _header(),
           _vaxCard(),
           _vaxCharts(),
-          _barChart(),
+          // _barChart(),
         ],
       ),
     );
@@ -146,67 +145,67 @@ class _VaxScreenState extends State<VaxScreen> {
     );
   }
 
-  SliverToBoxAdapter _barChart() {
-    return SliverToBoxAdapter(
-      child: Column(
-        children: [
-          FutureBuilder(
-            future: DataService().getVaccineList(_province), // async work
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                default:
-                  if (snapshot.hasError)
-                    return Text('Error: ${snapshot.error}');
-                  else {
-                    List<Vaccine> data = snapshot.data;
-                    var df = new DateFormat('dd-MM-yyyy');
+  // SliverToBoxAdapter _barChart() {
+  //   return SliverToBoxAdapter(
+  //     child: Column(
+  //       children: [
+  //         FutureBuilder(
+  //           future: DataService().getVaccineList(_province), // async work
+  //           builder: (context, snapshot) {
+  //             switch (snapshot.connectionState) {
+  //               case ConnectionState.waiting:
+  //                 return Center(
+  //                   child: CircularProgressIndicator(),
+  //                 );
+  //               default:
+  //                 if (snapshot.hasError)
+  //                   return Text('Error: ${snapshot.error}');
+  //                 else {
+  //                   List<Vaccine> data = snapshot.data;
+  //                   var df = new DateFormat('dd-MM-yyyy');
 
-                    List<charts.Series<Vaccine, DateTime>> _createSampleData() {
-                      return [
-                        charts.Series(
-                            id: "Vaccinations",
-                            data: data,
-                            domainFn: (Vaccine vax, _) =>
-                                df.parse(vax.dateVaccineAdministered),
-                            measureFn: (Vaccine vax, _) => vax.avaccine),
-                      ];
-                    }
+  //                   List<charts.Series<Vaccine, DateTime>> _createSampleData() {
+  //                     return [
+  //                       charts.Series(
+  //                           id: "Vaccinations",
+  //                           data: data,
+  //                           domainFn: (Vaccine vax, _) =>
+  //                               df.parse(vax.dateVaccineAdministered),
+  //                           measureFn: (Vaccine vax, _) => vax.avaccine),
+  //                     ];
+  //                   }
 
-                    return Container(
-                      padding: EdgeInsets.all(10.0),
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 100.0,
-                          ),
-                          Text(
-                            "Vaccinations Per Day",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.0,
-                              fontFamily: 'Futura',
-                            ),
-                          ),
-                          Container(
-                            height: 400.0,
-                            child: charts.TimeSeriesChart(_createSampleData(),
-                                animate: true),
-                          )
-                        ],
-                      ),
-                    );
-                  }
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
+  //                   return Container(
+  //                     padding: EdgeInsets.all(10.0),
+  //                     child: Column(
+  //                       children: <Widget>[
+  //                         SizedBox(
+  //                           height: 100.0,
+  //                         ),
+  //                         Text(
+  //                           "Vaccinations Per Day",
+  //                           style: TextStyle(
+  //                             color: Colors.black,
+  //                             fontSize: 12.0,
+  //                             fontFamily: 'Futura',
+  //                           ),
+  //                         ),
+  //                         Container(
+  //                           height: 400.0,
+  //                           child: charts.TimeSeriesChart(_createSampleData(),
+  //                               animate: true),
+  //                         )
+  //                       ],
+  //                     ),
+  //                   );
+  //                 }
+  //             }
+  //           },
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   //pie chart
   SliverToBoxAdapter _vaxCharts() {
@@ -270,7 +269,7 @@ class _VaxScreenState extends State<VaxScreen> {
 
           VaccineGroup grou = group.vaxGroup['80+'];
 
-          return group.loading
+          return group.loading && vaccine.loading
               ? Center(
                   child: Container(
                     height: 10,

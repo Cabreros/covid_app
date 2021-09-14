@@ -1,14 +1,16 @@
 import 'package:current_cases_app/models/case_model.dart';
 import 'package:current_cases_app/models/status_model.dart';
+import 'package:current_cases_app/models/vaccine_group_model.dart';
 import 'package:current_cases_app/providers/case_provider.dart';
-import 'package:current_cases_app/providers/hospital_provider.dart';
 import 'package:current_cases_app/providers/status_provider.dart';
+import 'package:current_cases_app/providers/vaccine_provider.dart';
 import 'package:current_cases_app/services/data_service.dart';
 import 'package:current_cases_app/data/health_region_data.dart'
     as healthRegionData;
 import 'package:current_cases_app/data/reopening_data.dart';
 import 'package:current_cases_app/models/summary_model.dart';
 import 'package:current_cases_app/widgets/stats_card.dart';
+import 'package:current_cases_app/widgets/vaxx_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
@@ -29,6 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   var format = DateFormat.yMMMMd('en_US');
 
   @override
+  void initState() {
+    super.initState();
+    Provider.of<VaccineGroupProvider>(context, listen: false)
+        .getNewVaccineData();
+    Provider.of<VaccineProvider>(context, listen: false).getNewVaccineData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
@@ -36,9 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _appBar(),
           _header(),
           _bodyStats(_province),
-          // _newApiTest(),
-          // _hospitalTest(),
-          // _statusTest(),
+          _totalVaccinationStats(),
           _reopeningPages()
         ],
       ),
@@ -325,6 +333,50 @@ class _HomeScreenState extends State<HomeScreen> {
             }
         }
       },
+    );
+  }
+
+  SliverToBoxAdapter _totalVaccinationStats() {
+    return SliverToBoxAdapter(
+      child: Consumer2<VaccineProvider, VaccineGroupProvider>(
+        builder: (context, vaccine, group, child) {
+          dynamic totalPop18Plus = 12083325;
+          dynamic totalPop12Plus = 13034844;
+          List groupings = group.vaxGroup.keys.toList();
+
+          VaccineGroup grou = group.vaxGroup['80+'];
+
+          return group.loading && vaccine.loading
+              ? Center(
+                  child: Container(
+                    height: 10,
+                    width: 10,
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : Column(
+                  children: [
+                    VaxxCard(
+                      label: 'total at least one',
+                      stat: grou.date,
+                      percentage: grou.percentAtLeastOneDose,
+                      animationTime: (1000),
+                      color: Color(0xffe8a87c),
+                    ),
+                    VaxxCard(
+                      label: 'total double',
+                      stat: 'total double',
+                      percentage: grou.percentFullyVaccinated,
+                      animationTime: (1000),
+                      color: Color(0xff9ad9db),
+                    ),
+                    Text(
+                      group.vaxGroup['80+']?.toJson().toString(),
+                    ),
+                  ],
+                );
+        },
+      ),
     );
   }
 
