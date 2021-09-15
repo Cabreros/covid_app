@@ -7,6 +7,7 @@ class VaxxCard extends StatelessWidget {
   final Color color;
   final double percentage;
   final int animationTime;
+  final Function tapFunction;
   const VaxxCard({
     @required this.label,
     @required this.stat,
@@ -14,59 +15,63 @@ class VaxxCard extends StatelessWidget {
     this.animationTime: 1000,
     this.color: const Color(0xff41b3a3),
     Key key,
+    this.tapFunction,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15.0,
-              fontFamily: 'Futura',
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Center(
-            child: Text(
-              '$stat',
+    return InkWell(
+      onTap: tapFunction,
+      child: Container(
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+        padding: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20.0,
+                fontSize: 15.0,
                 fontFamily: 'Futura',
               ),
             ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Center(
-            child: LinearPercentIndicator(
-              animation: true,
-              lineHeight: 20.0,
-              animationDuration: animationTime,
-              percent: percentage,
-              center: Text(
-                (percentage * 100).toStringAsFixed(2) + '%',
-                style: TextStyle(color: Colors.white),
-              ),
-              linearStrokeCap: LinearStrokeCap.roundAll,
-              progressColor: Colors.green,
+            SizedBox(
+              height: 5,
             ),
-          ),
-        ],
+            Center(
+              child: Text(
+                '$stat',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                  fontFamily: 'Futura',
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Center(
+              child: LinearPercentIndicator(
+                animation: true,
+                lineHeight: 20.0,
+                animationDuration: animationTime,
+                percent: percentage,
+                center: Text(
+                  (percentage * 100).toStringAsFixed(2) + '%',
+                  style: TextStyle(color: Colors.white),
+                ),
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: Colors.green,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

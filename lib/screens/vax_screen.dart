@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:current_cases_app/data/health_region_data.dart'
     as healthRegionData;
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 class VaxScreen extends StatefulWidget {
@@ -17,11 +16,10 @@ class VaxScreen extends StatefulWidget {
 
 class _VaxScreenState extends State<VaxScreen> {
   DateTime selectedDate = DateTime.now();
-  List<String> _provinces = healthRegionData.provinces;
   Future<Summary> futSummary =
       DataService().getProvinceSummary('MB', DateTime.now());
   var format = DateFormat.yMMMMd('en_US');
-  String _group = 'Adults_18plus';
+  String _selectedGroup = 'Adults_18plus';
 
   @override
   void initState() {
@@ -40,7 +38,6 @@ class _VaxScreenState extends State<VaxScreen> {
           _titleBar(),
           _header(),
           _vaxCard(),
-          _vaxCharts(),
           // _barChart(),
         ],
       ),
@@ -207,81 +204,33 @@ class _VaxScreenState extends State<VaxScreen> {
   //   );
   // }
 
-  //pie chart
-  SliverToBoxAdapter _vaxCharts() {
-    return SliverToBoxAdapter(
-      child: Consumer<VaccineProvider>(
-        builder: (context, vaccine, child) {
-          vaccine.getNewVaccineData();
-
-          if (vaccine == null) {
-            return Container(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            dynamic totalPop18Plus = 12083325;
-            dynamic totalPop12Plus = 13034844;
-            return Container(
-              padding: EdgeInsets.all(15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Current Vaccinations By The Numbers',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12.0,
-                      fontFamily: 'Futura',
-                    ),
-                  ),
-                  Text(child.toString()),
-                  Text(vaccine.newvax.toJson().toString()),
-                  Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: new LinearPercentIndicator(
-                      width: MediaQuery.of(context).size.width - 75,
-                      animation: true,
-                      lineHeight: 20.0,
-                      animationDuration: 1000,
-                      percent: 0.1,
-                      center: Text((0.1 * 100).toStringAsFixed(2) + '%'),
-                      linearStrokeCap: LinearStrokeCap.roundAll,
-                      progressColor: Colors.green,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-      ),
-    );
-  }
-
   Container dropDownMenu() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10.0),
+      width: MediaQuery.of(context).size.width * 0.5,
+      margin: EdgeInsets.only(top: 5),
       padding: EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-        color: Color(0xffe27d60),
-        borderRadius: BorderRadius.circular(10),
+        color: Color(0xff41b3a3),
+        borderRadius: BorderRadius.circular(17),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          dropdownColor: Color(0xffe27d60),
-          value: _group,
+          dropdownColor: Color(0xff41b3a3),
+          value: _selectedGroup,
           items: healthRegionData.groups
               .map(
                 (e) => DropdownMenuItem(
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text(
-                        e,
-                        style: TextStyle(
-                          fontFamily: 'Futura',
-                          fontSize: 15,
-                          color: Colors.white,
+                      Center(
+                        child: Text(
+                          e,
+                          style: TextStyle(
+                            fontFamily: 'Futura',
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -292,7 +241,7 @@ class _VaxScreenState extends State<VaxScreen> {
               .toList(),
           onChanged: (String value) {
             setState(() {
-              _group = value;
+              _selectedGroup = value;
             });
           },
         ),
@@ -304,13 +253,9 @@ class _VaxScreenState extends State<VaxScreen> {
     return SliverToBoxAdapter(
       child: Consumer2<VaccineProvider, VaccineGroupProvider>(
         builder: (context, vaccine, group, child) {
-          dynamic totalPop18Plus = 12083325;
-          dynamic totalPop12Plus = 13034844;
-          List groupings = group.vaxGroup.keys.toList();
+          VaccineGroup currentGroup = group.vaxGroup[_selectedGroup];
 
-          VaccineGroup grou = group.vaxGroup[_group];
-
-          return group.loading && vaccine.loading
+          return group.loading || vaccine.loading
               ? Center(
                   child: Container(
                     height: 10,
@@ -323,23 +268,71 @@ class _VaxScreenState extends State<VaxScreen> {
                     dropDownMenu(),
                     VaxxCard(
                       label: 'total at least one',
-                      stat: grou.date,
-                      percentage: grou.percentAtLeastOneDose,
+                      stat: currentGroup.date,
+                      percentage: currentGroup.percentAtLeastOneDose,
                       animationTime: (1000),
                       color: Color(0xffe8a87c),
+                      tapFunction: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('More detail'),
+                              content: stageAlertDialog(currentGroup),
+                            );
+                          },
+                        );
+                      },
                     ),
                     VaxxCard(
                       label: 'total double',
                       stat: 'total double',
-                      percentage: grou.percentFullyVaccinated,
+                      percentage: currentGroup.percentFullyVaccinated,
                       animationTime: (1000),
                       color: Color(0xff9ad9db),
-                    ),
-                    Text(
-                      grou.toJson().toString(),
+                      tapFunction: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('More detail'),
+                              content: stageAlertDialog(currentGroup),
+                            );
+                          },
+                        );
+                      },
                     ),
                   ],
                 );
+        },
+      ),
+    );
+  }
+
+  Widget stageAlertDialog(VaccineGroup input) {
+    List info = [
+      'Total one dose',
+      'Total second dose',
+      'Total population',
+    ];
+
+    List vaccineInfo = [
+      input.atLeastOneDoseCumulative,
+      input.secondDoseCumulative,
+      input.totalPopulation
+    ];
+
+    var f = NumberFormat("###,###,###", "en_US");
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: info.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(
+                info[index] + ' - ' + f.format(vaccineInfo[index]).toString()),
+          );
         },
       ),
     );

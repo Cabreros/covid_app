@@ -340,53 +340,43 @@ class _HomeScreenState extends State<HomeScreen> {
     return SliverToBoxAdapter(
       child: Consumer2<VaccineProvider, VaccineGroupProvider>(
         builder: (context, vaccine, group, child) {
-          VaccineGroup ont12Plus = group.vaxGroup['Ontario_12plus'];
+          if (group.loading || vaccine.loading) {
+            return Center(
+              child: Container(
+                height: 10,
+                width: 10,
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else {
+            VaccineGroup ont12Plus = group.vaxGroup['Ontario_12plus'];
 
-          return group.loading && vaccine.loading
-              ? Center(
-                  child: Container(
-                    height: 10,
-                    width: 10,
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : Column(
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Vaccination Overview',
-                      style: TextStyle(fontSize: 17),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('More details'),
-                                content: stageAlertDialog(0),
-                              );
-                            });
-                      },
-                      child: VaxxCard(
-                        label: 'At least one dose cumulative',
-                        stat: 'Ontario 12+',
-                        percentage: ont12Plus.percentAtLeastOneDose,
-                        animationTime: (1000),
-                        color: Color(0xffe8a87c),
-                      ),
-                    ),
-                    VaxxCard(
-                      label: 'Fully vaccinated',
-                      stat: 'Ontario 12+',
-                      percentage: ont12Plus.percentFullyVaccinated,
-                      animationTime: (1000),
-                      color: Color(0xff9ad9db),
-                    ),
-                  ],
-                );
+            return Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Vaccination Overview',
+                  style: TextStyle(fontSize: 17),
+                ),
+                VaxxCard(
+                  label: 'At least one dose cumulative',
+                  stat: 'Ontario 12+',
+                  percentage: ont12Plus.percentAtLeastOneDose,
+                  animationTime: (1000),
+                  color: Color(0xffe8a87c),
+                ),
+                VaxxCard(
+                  label: 'Fully vaccinated',
+                  stat: 'Ontario 12+',
+                  percentage: ont12Plus.percentFullyVaccinated,
+                  animationTime: (1000),
+                  color: Color(0xff9ad9db),
+                ),
+              ],
+            );
+          }
         },
       ),
     );
