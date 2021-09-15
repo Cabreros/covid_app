@@ -359,12 +359,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Vaccination Overview',
                       style: TextStyle(fontSize: 17),
                     ),
-                    VaxxCard(
-                      label: 'At least one dose cumulative',
-                      stat: 'Ontario 12+',
-                      percentage: ont12Plus.percentAtLeastOneDose,
-                      animationTime: (1000),
-                      color: Color(0xffe8a87c),
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('More details'),
+                                content: stageAlertDialog(0),
+                              );
+                            });
+                      },
+                      child: VaxxCard(
+                        label: 'At least one dose cumulative',
+                        stat: 'Ontario 12+',
+                        percentage: ont12Plus.percentAtLeastOneDose,
+                        animationTime: (1000),
+                        color: Color(0xffe8a87c),
+                      ),
                     ),
                     VaxxCard(
                       label: 'Fully vaccinated',

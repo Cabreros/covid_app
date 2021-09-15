@@ -19,8 +19,8 @@ class VaxxCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(8.0),
-      padding: EdgeInsets.all(10.0),
+      margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+      padding: EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(10.0),

@@ -1,5 +1,16 @@
 List<String> provinces = ['AB', 'BC', 'MB', 'NB', 'ON', 'QC', 'YT'];
-
+List<String> groups = [
+  "Ontario_12plus",
+  "Adults_18plus",
+  "12-17yrs",
+  "18-29yrs",
+  "30-39yrs",
+  "40-49yrs",
+  "50-59yrs",
+  "60-69yrs",
+  "70-79yrs",
+  "80+",
+];
 Map<String, int> regionData = {
   'AB -	Calgary': 4832,
   'AB -	Central': 4833,

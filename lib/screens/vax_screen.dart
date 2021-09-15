@@ -21,7 +21,7 @@ class _VaxScreenState extends State<VaxScreen> {
   Future<Summary> futSummary =
       DataService().getProvinceSummary('MB', DateTime.now());
   var format = DateFormat.yMMMMd('en_US');
-  String _province = 'ON';
+  String _group = 'Adults_18plus';
 
   @override
   void initState() {
@@ -259,6 +259,47 @@ class _VaxScreenState extends State<VaxScreen> {
     );
   }
 
+  Container dropDownMenu() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+        color: Color(0xffe27d60),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          dropdownColor: Color(0xffe27d60),
+          value: _group,
+          items: healthRegionData.groups
+              .map(
+                (e) => DropdownMenuItem(
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        e,
+                        style: TextStyle(
+                          fontFamily: 'Futura',
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  value: e,
+                ),
+              )
+              .toList(),
+          onChanged: (String value) {
+            setState(() {
+              _group = value;
+            });
+          },
+        ),
+      ),
+    );
+  }
+
   SliverToBoxAdapter _vaxCard() {
     return SliverToBoxAdapter(
       child: Consumer2<VaccineProvider, VaccineGroupProvider>(
@@ -267,7 +308,7 @@ class _VaxScreenState extends State<VaxScreen> {
           dynamic totalPop12Plus = 13034844;
           List groupings = group.vaxGroup.keys.toList();
 
-          VaccineGroup grou = group.vaxGroup['80+'];
+          VaccineGroup grou = group.vaxGroup[_group];
 
           return group.loading && vaccine.loading
               ? Center(
@@ -279,6 +320,7 @@ class _VaxScreenState extends State<VaxScreen> {
                 )
               : Column(
                   children: [
+                    dropDownMenu(),
                     VaxxCard(
                       label: 'total at least one',
                       stat: grou.date,
@@ -294,7 +336,7 @@ class _VaxScreenState extends State<VaxScreen> {
                       color: Color(0xff9ad9db),
                     ),
                     Text(
-                      group.vaxGroup['80+']?.toJson().toString(),
+                      grou.toJson().toString(),
                     ),
                   ],
                 );
